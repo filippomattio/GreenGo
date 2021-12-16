@@ -1,9 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, session
-
+from flask_sqlalchemy import SQLAlchemy
+import os
 from form import LoginForm
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'hard to guess'
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///website.db'
+db=SQLAlchemy(app)
 
 @app.route('/')
 def homepage():  # put application's code here
@@ -22,6 +25,15 @@ def login_page():
         session['username'] = username
         return redirect(url_for('homepage'))
     return render_template('login.html',form=form, username=username, password=password)
+
+
+@app.route('/logout',methods=['POST','GET'])
+def logout_page():
+    session.clear()
+    return redirect(url_for('homepage'))
+
+
+
 
 if __name__ == '__main__':
     app.run()

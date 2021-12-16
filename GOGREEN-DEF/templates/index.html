@@ -55,6 +55,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/registration">Registration</a>
           </li>
+                    <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
         </ul>
         <form class="d-flex">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -83,7 +86,11 @@
 
         <div class="container">
           <div class="carousel-caption text-start">
-            <h1>Welcome {{ username }}</h1>
+              {% if session.get('username')%}
+                   <h1>Welcome {{ username }}</h1>
+                  {% else %}
+                      <h1>Welcome stranger</h1>
+              {% endif %}
             <p>Some representative placeholder content for the first slide of the carousel.</p>
             <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>
           </div>
