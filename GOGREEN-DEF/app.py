@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.testing.pickleable import User
+
 
 from form import LoginForm
 
@@ -15,9 +15,9 @@ db = SQLAlchemy(app)
 
 @app.before_first_request
 def create_db():
-
+    db.drop_all()
     db.create_all()
-    name = User(name='name')
+
 
 
 
