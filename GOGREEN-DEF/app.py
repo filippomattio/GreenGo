@@ -51,6 +51,17 @@ from form import RegistrationForm, LoginForm
 def create_db():
     db.drop_all()
     db.create_all()
+    role_admin = Role(role_name='Admin')
+    role_user = Role(role_name='User')
+    role_teacher = Role(role_name='Teacher')
+    pass_c = bcrypt.generate_password_hash("123456")  # per criptare la password
+    user_admin = User(name="Mohammad", family_name="Ghazi", username="admin", email="admin@admin.com", password=pass_c,
+                      role_name=role_admin)
+    db.session.add_all([role_admin, role_user, role_teacher])
+    db.session.add(user_admin)
+    db.session.commit()
+    # user_query = User.query.filter_by(username="admin").first()
+    # print(user_query.name)
 
 
 @app.route('/')
