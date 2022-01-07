@@ -24,9 +24,8 @@ app.config['SECRET_KEY'] = 'hard to guess'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
-app.config[
-    'MAIL_USERNAME'] = ""  # os.environ['EMAIL_USERNAME'] qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
-app.config['MAIL_PASSWORD'] = ""  # os.environ['password']
+app.config['MAIL_USERNAME'] = os.environ['username'] #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+app.config['MAIL_PASSWORD'] = os.environ['password']
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
 app.config['MAIL_PORT'] = 587

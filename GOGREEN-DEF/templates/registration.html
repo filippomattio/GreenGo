@@ -1,48 +1,50 @@
 {% extends "index.html" %}
 
 {% block content %}
-<form class="row g-3">
-  <div class="col-md-6">
-    <label for="inputEmail4" class="form-label">Email</label>
-    <input type="email" class="form-control" id="inputEmail4">
-  </div>
-  <div class="col-md-6">
-    <label for="inputPassword4" class="form-label">Password</label>
-    <input type="password" class="form-control" id="inputPassword4">
-  </div>
-  <div class="col-12">
-    <label for="inputAddress" class="form-label">Address</label>
-    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-  </div>
-  <div class="col-12">
-    <label for="inputAddress2" class="form-label">Address 2</label>
-    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-  </div>
-  <div class="col-md-6">
-    <label for="inputCity" class="form-label">City</label>
-    <input type="text" class="form-control" id="inputCity">
-  </div>
-  <div class="col-md-4">
-    <label for="inputState" class="form-label">State</label>
-    <select id="inputState" class="form-select">
-      <option selected>Choose...</option>
-      <option>...</option>
-    </select>
-  </div>
-  <div class="col-md-2">
-    <label for="inputZip" class="form-label">Zip</label>
-    <input type="text" class="form-control" id="inputZip">
-  </div>
-  <div class="col-12">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="gridCheck">
-      <label class="form-check-label" for="gridCheck">
-        Check me out
-      </label>
-    </div>
-  </div>
-  <div class="col-12">
-    <button type="submit" class="btn btn-primary">Sign in</button>
-  </div>
+
+    <h1>Register Form</h1>
+{#    {% if session['username'] %}#}
+{#       Welcome {{ name }},{{ family }}#}
+{#    {% else %}#}
+{#        {{  }}#}
+{#    {% endif %}#}
+
+    <div class="row">
+
+<div class="col-lg-8 mb-4">
+<form method="post">
+   <div class="control-group form-group">
+   <div class="controls">
+        {{ form.name.label }} {{ form.name(class='form-control') }}
+
+           {% for error in form.name.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+
+   </div>
+       <div class="controls">
+           {{ form.family_name.label }} {{ form.family_name(class='form-control') }}
+            {% for error in form.family_name.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+       </div>
+       <div class="controls">{{ form.username.label }} {{ form.username(class='form-control') }}
+                   {% for error in form.username.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+       </div>
+          <div class="controls">{{ form.mail.label }} {{ form.mail(class='form-control') }}
+                   {% for error in form.mail.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+       </div>
+
+
+       <div class="controls">{{ form.password.label }} {{ form.password(class='form-control') }}</div>
+    <div class="controls">{{ form.hidden_tag() }}
+        {{ form.submit(class='btn btn-primary') }}</div>
+   </div>
 </form>
+</div>
+    </div>
 {% endblock content %}
