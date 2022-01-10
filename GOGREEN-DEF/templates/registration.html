@@ -28,13 +28,13 @@
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
        </div>
-       <div class="controls">{{ form.username.label }} {{ form.username(class='form-control') }}
-                   {% for error in form.username.errors %}
+       <div class="controls">{{ form.email.label }} {{ form.email(class='form-control') }}
+                   {% for error in form.email.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
        </div>
-          <div class="controls">{{ form.mail.label }} {{ form.mail(class='form-control') }}
-                   {% for error in form.mail.errors %}
+          <div class="controls">{{ form.date_of_birth.label }} {{ form.date_of_birth(class='form-control') }}
+                   {% for error in form.date_of_birth.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
        </div>

@@ -54,7 +54,8 @@ def create_db():
     role_user = Role(role_name='User')
     role_teacher = Role(role_name='Teacher')
     pass_c = bcrypt.generate_password_hash("123456")  # per criptare la password
-    user_admin = User(name="Mohammad", family_name="Ghazi", username="admin", email="admin@admin.com", password=pass_c,
+    user_admin = User( email="admin@admin.com", name="Mohammad", family_name="Ghazi", date_of_birth="1999/06/03",
+                       password=pass_c,
                       role_name=role_admin)
     db.session.add_all([role_admin, role_user, role_teacher])
     db.session.add(user_admin)
@@ -79,19 +80,19 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route('/login', methods=['POST', 'GET'])
 def login_page():
     password = None
-    username = None
+    email = None
     form = LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, password):
-                session['username'] = username
-                session['id'] = user.id
+                session['email'] = email
+                #session['id'] = user.id
             return redirect(url_for("welcome.html"))
-        session['username'] = username
-    return render_template('login.html', form=form, username=username, password=password)
+        session['email'] = email
+    return render_template('login.html', form=form, email=email, password=password)
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -104,20 +105,20 @@ def logout_page():
 def register_page():
     form = RegistrationForm()
     if form.validate_on_submit():
-        username = form.username.data
         role_name = Role.query.filter_by(role_name="User").first()
         pass_c = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data,
+        new_user = User(email=form.email.data,
                         name=form.name.data,
                         family_name=form.family_name.data,
-                        email=form.mail.data,
+                        date_of_birth=form.date_of_birth.data,
                         password=pass_c,
                         role_name=role_name)
+        #form.validate_email(form)
         db.session.add(new_user)
         db.session.commit()
-        send_mail(form.mail.data, "New registration", "mail", name=form.name.data, password=form.password.data,
-                  username=username)
-        session['username'] = username
+        send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
+                  email=form.email.data)
+        session['email'] = form.email.data
         return redirect(url_for("welcome.html"))
     return render_template('registration.html', form=form)
 

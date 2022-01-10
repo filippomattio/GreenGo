@@ -11,7 +11,7 @@
 
 
 <form method="post">
-    {{ form.username.label }} {{ form.username() }}
+    {{ form.email.label }} {{ form.email() }}
     {{ form.password.label }} {{ form.password() }}
     {{ form.hidden_tag() }}
     {% for error in form.submit.errors %}
