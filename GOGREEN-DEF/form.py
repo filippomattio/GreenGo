@@ -5,7 +5,7 @@ from app import User
 
 class LoginForm(FlaskForm):
     email = StringField('E-Mail', validators=[DataRequired()])
-    password = PasswordField('Password:' ,validators=[DataRequired(),Length(min=3,max=10)])
+    password = PasswordField('Password:', validators=[DataRequired(),Length(min=3,max=10)])
     submit = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
