@@ -2,7 +2,12 @@
 
 
 {% block content %}
-   <h1>Reserve your green mean of transport!</h1>
+
+
+<div class="row">
+
+<div class="col-6">
+<h1>Reserve your green mean of transport!</h1>
 <div class="list-group">
 {% for sc in ord %}
   <a href="https://{{ sc.name }}.com" class="list-group-item list-group-item-action {% if sc.name==ord[0].name %} active" aria-current="true{% endif %}">
@@ -15,6 +20,19 @@
   </a>
 {% endfor %}
 </div>
+</div>
+</div>
+
+    <div class="row">
+
+<div class="col-6">
+
+    <--! qui si dovrebbe mettere la mappa-->
+    
+</div>
+
+    </div>
+
 {% endblock content %}
 
 

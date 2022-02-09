@@ -4,17 +4,17 @@ from wtforms.validators import DataRequired, Length,ValidationError
 from app import User
 
 class LoginForm(FlaskForm):
-    email = StringField('E-Mail', validators=[DataRequired()])
-    password = PasswordField('Password:', validators=[DataRequired(),Length(min=3,max=10)])
+    email = StringField('E-Mail:', validators=[DataRequired()])
+    password = PasswordField('Password:', validators=[DataRequired()])
     submit = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
-    email = StringField('E-Mail', validators=[DataRequired()])
+    email = StringField('E-Mail:', validators=[DataRequired()])
     name = StringField('Name:', validators=[DataRequired(), Length(min=3, max=10)])
     family_name = StringField('Family name:', validators=[DataRequired(), Length(min=3, max=10)])
     date_of_birth = StringField('Birthdate: ', validators=[DataRequired(), Length(min=10, max=10)])
     password = PasswordField('Password:', validators=[DataRequired(), Length(min=3, max=10)])
-    submit = SubmitField('Store')
+    submit = SubmitField('Sign in')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=self.email.data).first()

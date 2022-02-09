@@ -48,7 +48,7 @@ from form import RegistrationForm, LoginForm
 
 
 
-@app.before_first_request
+""""@app.before_first_request
 def create_db():
     db.drop_all()
     db.create_all()
@@ -75,6 +75,7 @@ def create_db():
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
 
+"""
 
 @app.route('/')
 def homepage():  # put application's code here
@@ -89,22 +90,20 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
     mail.send(msg)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login3', methods=['POST', 'GET'])
 def login_page():
-    password = None
-    email = None
+    if 'email' in session:
+        return redirect(url_for('confront_price'))
     form = LoginForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            if bcrypt.check_password_hash(user.password, password):
-                session['email'] = email
-                #session['id'] = user.id
-            return redirect(url_for('confront_price'))
+    #if form.validate_on_submit():
+    email = form.email.data
+    password = form.password.data
+    user = User.query.filter_by(email=form.email.data).first()
+    if user:
         session['email'] = email
-    return render_template('login.html', form=form, email=email, password=password)
+        if bcrypt.check_password_hash(user.password, password):
+            return redirect(url_for('confront_price'))
+    return render_template('login3.html', form=form, email=email, password=password)
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -139,6 +138,21 @@ def confront_price():
     ord = SharingCompany.query.order_by(SharingCompany.price_per_minute)
     return render_template('reserve.html', ord=ord)
 
+#@app.route('/login3', methods=['POST', 'GET'])
+#def login3():
+ #   return render_template('login3.html')
+
+@app.route('/login2', methods=['POST', 'GET'])
+def login2():
+    return render_template('login2.html')
+
+@app.route('/registration2', methods=['POST', 'GET'])
+def reg2():
+    return render_template('registration2.html')
+
+@app.route('/settings', methods=['POST', 'GET'])
+def set():
+    return render_template('settings.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
