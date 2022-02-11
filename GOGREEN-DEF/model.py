@@ -12,6 +12,9 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
+    def get_password(self):
+        return self.password
+
 
 class Role(db.Model):
     __tablename__ = "roles"

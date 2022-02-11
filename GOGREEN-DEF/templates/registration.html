@@ -3,6 +3,7 @@
 {% block content %}
 
     <form class="row g-3" method="post">
+    {{ form.hidden_tag() }}
   <div class="col-md-6">
     <label for= '{{ form.name.label }}' class="form-label">{{ form.name.label }}</label>
     {{ form.name(class='form-control', placeholder='First Name') }}
@@ -40,8 +41,9 @@
   </div>
 
   <div class="col-12">
-    <div>{{ form.hidden_tag() }}
-        {{ form.submit(class='btn btn-primary') }}</div>
+    <div>
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
    </div>
   </div>
 </form>

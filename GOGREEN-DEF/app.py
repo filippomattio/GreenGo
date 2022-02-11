@@ -44,7 +44,7 @@ configure_uploads(app, photos)
 patch_request_class(app)
 
 from model import User, Role, SharingCompany
-from form import RegistrationForm, LoginForm
+from form import RegistrationForm, LoginForm, ChangeForm
 
 
 
@@ -92,19 +92,37 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
+    email = None
+    password = None
     if 'email' in session:
         return redirect(url_for('confront_price'))
     form = LoginForm()
-    #if form.validate_on_submit():
-    email = form.email.data
-    password = form.password.data
-    user = User.query.filter_by(email=form.email.data).first()
-    if user:
-        session['email'] = email
-        if bcrypt.check_password_hash(user.password, password):
-            return redirect(url_for('confront_price'))
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            session['email'] = email
+            if bcrypt.check_password_hash(user.password, password):
+                return redirect(url_for('confront_price'))
     return render_template('login3.html', form=form, email=email, password=password)
 
+@app.route('/change', methods=['POST', 'GET'])
+def change():
+    if 'email' in session:
+        form = ChangeForm()
+        email = session['email']
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=email).first()
+            form.validate_password(user.password, email)
+            db.session.delete(user)
+            new_pass = form.new_password.data
+            pass_c = bcrypt.generate_password_hash(new_pass)
+            user.password = pass_c
+            db.session.add(user)
+            db.session.commit()
+            return render_template('change.html', form=form)
+        return redirect(url_for('login_page'))
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout_page():
