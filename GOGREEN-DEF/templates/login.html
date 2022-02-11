@@ -15,7 +15,7 @@
     {{ form.password.label }} {{ form.password() }}
     {{ form.hidden_tag() }}
     {% for error in form.submit.errors %}
-        {{ error }}
+        <div class="alert-danger">{{ error }}</div>
     {% endfor %}
 {{ form.submit() }}
 </form>

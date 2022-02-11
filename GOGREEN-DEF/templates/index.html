@@ -50,7 +50,7 @@
             <a class="nav-link active" aria-current="page" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link" href="/login3">Login</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/registration">Registration</a>
@@ -89,16 +89,19 @@
               {% if session.get('username')%}
                    <h1>Welcome {{ username }}</h1>
                   {% else %}
-                      <h1>Welcome stranger</h1>
+                      <h1>Welcome new user, register now!</h1>
               {% endif %}
             <p>Some representative placeholder content for the first slide of the carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>
+            <p><a class="btn btn-lg btn-primary" href="/registration">Sign up today</a></p>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
+        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <rect width="100%" height="100%" fill="#777"/>
 
+        <img src="https://static2-viaggi.corriereobjects.it/wp-content/uploads/2015/06/torino-getty-1080x810.jpg?v=133918" alt="Foto di Torino">
+             </svg>
         <div class="container">
           <div class="carousel-caption">
             <h1>Another example headline.</h1>
