@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,PasswordField,FileField, DateField
 from wtforms.validators import DataRequired, Length,ValidationError
 from app import User, bcrypt
+from flask import flash
 
 
 class LoginForm(FlaskForm):
@@ -20,7 +21,10 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         user = User.query.filter_by(email=self.email.data).first()
         if user:
-            raise ValidationError("User with email ' %s ' already exist!" % self.email.data)
+            flash("User with email %s already exists!" % self.email.data, 'errorEmail')
+            return False
+        else:
+            return True
 
 class ChangeForm(FlaskForm):
     old_password = PasswordField('Old Password:', validators=[DataRequired(), Length(min=3, max=10)])

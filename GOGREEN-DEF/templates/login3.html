@@ -78,21 +78,38 @@
        {{ form.email(class='form-control', placeholder='Email address') }}
 
       <label for="floatingInput">Email address</label>
-    </div>
+              {% with messages = get_flashed_messages(category_filter=["errorEmail"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-danger">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+
+        </div>
+
     <div class="form-floating">
        {{ form.password(class='form-control', placeholder='Password') }}
       <label for="floatingPassword">Password</label>
+                      {% with messages = get_flashed_messages(category_filter=["errorPassword"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-danger">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
     </div>
-{% for error in form.submit.errors %}
-        {{ error }}
-    {% endfor %}
     <div class="checkbox mb-3">
       <label>
         <input type="checkbox" value="remember-me"> Remember me
       </label>
     </div>
       {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
+  {% for error in form.submit.errors %}
+      <div class="alert-danger">{{ error }}</div>
+    {% endfor %}
     <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
+
   </form>
 </main>
 

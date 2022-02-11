@@ -24,6 +24,13 @@
       {% for error in form.email.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
+  {% with messages = get_flashed_messages(category_filter=["errorEmail"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-danger">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
   </div>
   <div class="col-6 col-md-4">
     <label for= '{{ form.date_of_birth.label }}' class="form-label">{{ form.date_of_birth.label }}</label>

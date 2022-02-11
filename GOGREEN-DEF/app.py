@@ -1,7 +1,7 @@
 import os
 from datetime import date
 from flask import Flask
-from flask import render_template, redirect, url_for, session
+from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
@@ -102,15 +102,20 @@ def login_page():
         password = form.password.data
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            session['email'] = email
             if bcrypt.check_password_hash(user.password, password):
+                session['email'] = email
                 return redirect(url_for('confront_price'))
+            else:
+                flash('Invalid password!', 'errorPassword')
+        else:
+            flash('Invalid email!', 'errorEmail')
+
     return render_template('login3.html', form=form, email=email, password=password)
 
 @app.route('/change', methods=['POST', 'GET'])
 def change():
+    form = ChangeForm()
     if 'email' in session:
-        form = ChangeForm()
         email = session['email']
         if form.validate_on_submit():
             user = User.query.filter_by(email=email).first()
@@ -121,8 +126,8 @@ def change():
             user.password = pass_c
             db.session.add(user)
             db.session.commit()
-            return render_template('change.html', form=form)
-        return redirect(url_for('login_page'))
+            return redirect(url_for('confront_price'))
+        return render_template('change.html', form=form)
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout_page():
@@ -142,7 +147,8 @@ def register_page():
                         date_of_birth=form.date_of_birth.data,
                         password=pass_c,
                         role_name=role_name)
-        #form.validate_email(form)
+        if not form.validate_email(form):
+            return render_template('registration.html', form=form)
         db.session.add(new_user)
         db.session.commit()
        # send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
