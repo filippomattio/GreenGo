@@ -4,34 +4,46 @@
 {% block content %}
 
 
-<div class="row">
 
-<div class="col-6">
 <h1>Reserve your green mean of transport!</h1>
+
+
 <div class="list-group">
 {% for sc in ord %}
+    <div class="row">
+    <div class="col-6 col-md-10">
   <a href="https://{{ sc.name }}.com" class="list-group-item list-group-item-action {% if sc.name==ord[0].name %} active" aria-current="true{% endif %}">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{ sc.name }}</h5>
       <small>{{ sc.to_string()}}</small>
     </div>
-    <p class="mb-1">Type of vehicle: {{ sc.type_vehicle }}</p>
+    <p class="mb-1">Type of motor: {{ sc.type_motor }}</p>
     <small>A total of {{ sc.num_vehicles }} vehicles in Turin</small>
   </a>
+    </div>
+    <div class="col-6 col-md-2">
+    <form action="/go<{{ sc.name }}>">
+        <input type="submit" class="btn btn-primary" value="Reserve now">
+    </form>
+          </div>
+    </div>
+
+
 {% endfor %}
 </div>
-</div>
-</div>
 
-    <div class="row">
 
-<div class="col-6">
+
+
+
+<div class="col-md-6">
 
     <--! qui si dovrebbe mettere la mappa-->
     
 </div>
 
     </div>
+
 
 {% endblock content %}
 

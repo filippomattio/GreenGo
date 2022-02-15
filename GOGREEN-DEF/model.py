@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from app import db
 
@@ -11,6 +11,7 @@ class User(db.Model):
     date_of_birth = db.Column(db.String(10), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    transportations = db.relationship("Transportation", backref="user_tr")
 
     def get_password(self):
         return self.password
@@ -33,6 +34,7 @@ class SharingCompany(db.Model):
     type_vehicle = db.Column(db.String(20), nullable = False)
     type_motor = db.Column(db.String(20), nullable = False)
     points = db.Column(db.Integer, nullable=False)
+    transportations = db.relationship("Transportation", backref="sharing_company_tr")
 
     def to_string(self):
         s = str(str(self.price_per_minute) + " euro/minute")
@@ -40,5 +42,6 @@ class SharingCompany(db.Model):
 
 class Transportation(db.Model):
     __tablename__ = "transportations"
-    user = db.Column(db.String, primary_key=True)
-    sharing_company = b.Column(db.String(50), primary_key=True)
+    user = db.Column(db.String(100), db.ForeignKey('users.email'), primary_key=True)
+    sharing_company = db.Column(db.String(50), db.ForeignKey('sharing_companies.name'), primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.now())

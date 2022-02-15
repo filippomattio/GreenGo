@@ -74,8 +74,8 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-"""
 
+"""
 
 @app.route('/')
 def homepage():  # put application's code here
@@ -179,5 +179,12 @@ def pro():
 @app.route('/grid', methods=['POST', 'GET'])
 def pr():
     return render_template('grid.html')
+
+@app.route('/go/<>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
+def go():
+    email = session['email']
+    if email:
+        return None
+
 if __name__ == '__main__':
     app.run(debug=True)
