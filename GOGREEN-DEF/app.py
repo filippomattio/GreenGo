@@ -98,7 +98,7 @@ def mapview():
         lat=45.0578564352,
         lng=7.65664237342,
         style="height:900px;width:900px;margin:4;",
-        zoom=18.5,
+        zoom=19,
         markers=[
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
@@ -110,7 +110,9 @@ def mapview():
              'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
              'lat':45.0578564352,
              'lng': 7.65664237342,
-             'infobox': "<b>Hello World from other place</b>"
+             'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
+                        "<br>"
+                        "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
           }
         ]
     )
