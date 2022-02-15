@@ -9,8 +9,8 @@ from flask_bcrypt import Bcrypt
 from flask_uploads import UploadSet
 from flask_uploads import configure_uploads
 from flask_uploads import IMAGES, patch_request_class
-
-
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 # use this update to fix the  from werkzeug import secure_filename, FileStorage
 # ImportError: cannot import name 'secure_filename'
 # pip install -U Werkzeug==0.16.0
@@ -21,6 +21,8 @@ from flask_uploads import IMAGES, patch_request_class
 
 app = Flask(__name__)
 
+app.config['GOOGLEMAPS_KEY'] = "AIzaSyDq0H2us352mUJEm1oiTuorwaZCz9ED8gU"
+GoogleMaps(app)
 app.config['SECRET_KEY'] = 'hard to guess'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
@@ -82,6 +84,35 @@ def homepage():  # put application's code here
     username = session.get('username')
     return render_template("home.html", username=username)
 
+@app.route("/map")
+def mapview():
+    # creating a map in the view
+    mymap = Map(
+        identifier="view-side",
+        lat=45.069011,
+        lng=7.693216,
+        markers=[(45.069011, 7.693216)]
+    )
+    sndmap = Map(
+        identifier="sndmap",
+        lat=45.069011,
+        lng=7.693216,
+        markers=[
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+             'lat': 45.069011,
+             'lng': 7.693216,
+             'infobox': "<b>Hello World</b>"
+          },
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+             'lat':45.069011,
+             'lng': 7.693216,
+             'infobox': "<b>Hello World from other place</b>"
+          }
+        ]
+    )
+    return render_template('map.html', mymap=mymap, sndmap=sndmap)
 
 def send_mail(to, subject, template, **kwargs):  # to is could be a list
     msg = Message(subject, recipients=[to], sender=app.config['MAIL_USERNAME'])
@@ -138,9 +169,7 @@ def logout_page():
     session.clear()
     return redirect(url_for('homepage'))
 
-@app.route('/map', methods=['POST', 'GET'])
-def map():
-    return render_template('map.html')
+
 
 @app.route('/registration', methods=['POST', 'GET'])
 def register_page():
