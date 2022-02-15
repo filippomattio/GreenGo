@@ -25,15 +25,15 @@ app.config['SECRET_KEY'] = 'hard to guess'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
-app.config['MAIL_USERNAME'] = 'greengo2022@mail.com' # os.environ['username'] #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
-app.config['MAIL_PASSWORD'] = 'Greengo2022' #os.environ['password']
+app.config['MAIL_USERNAME'] = "greengo2022@mail.com" #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+app.config['MAIL_PASSWORD'] = "Greengo2022"
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_PORT'] = 465
 # Upload Configuration
 app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd() + "/static"
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app, session_options={"autoflush": False})
 # MAIL
 mail = Mail(app)
 bcrypt = Bcrypt(app)
@@ -119,14 +119,18 @@ def change():
         email = session['email']
         if form.validate_on_submit():
             user = User.query.filter_by(email=email).first()
-            form.validate_password(user.password, email)
+            if not form.validate_password(user.password, email):
+                return render_template('change.html', form=form)
             db.session.delete(user)
             new_pass = form.new_password.data
             pass_c = bcrypt.generate_password_hash(new_pass)
             user.password = pass_c
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for('confront_price'))
+            flash("Password changed succesfully!", 'newPassword')
+            #send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
+            #       email=form.email.data)
+            return render_template('change.html', form=form)
         return render_template('change.html', form=form)
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -149,12 +153,13 @@ def register_page():
                         role_name=role_name)
         if not form.validate_email(form):
             return render_template('registration.html', form=form)
-        db.session.add(new_user)
-        db.session.commit()
-       # send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
-        #          email=form.email.data)
-        session['email'] = form.email.data
-        return redirect(url_for('confront_price'))
+        else:
+            db.session.add(new_user)
+            db.session.commit()
+           # send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
+            #       email=form.email.data)
+            session['email'] = form.email.data
+            return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
 
 @app.route('/reserve', methods=['POST', 'GET'])
@@ -162,21 +167,11 @@ def confront_price():
     ord = SharingCompany.query.order_by(SharingCompany.price_per_minute)
     return render_template('reserve.html', ord=ord)
 
-#@app.route('/login3', methods=['POST', 'GET'])
-#def login3():
- #   return render_template('login3.html')
-
-@app.route('/login2', methods=['POST', 'GET'])
-def login2():
-    return render_template('login2.html')
-
-@app.route('/registration2', methods=['POST', 'GET'])
-def reg2():
-    return render_template('registration2.html')
-
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
     return render_template('settings.html')
-
+@app.route('/profile', methods=['POST', 'GET'])
+def pro():
+    return render_template('profile.html')
 if __name__ == '__main__':
     app.run(debug=True)

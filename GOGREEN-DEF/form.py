@@ -34,4 +34,6 @@ class ChangeForm(FlaskForm):
     def validate_password(self, old_password, email):
         user = User.query.filter_by(email=email).first()
         if not user or not bcrypt.check_password_hash(old_password, self.old_password.data):
-            raise ValidationError("Old password not correct!")
+            flash("Old password not correct!", 'oldPassword')
+            return False
+        return True
