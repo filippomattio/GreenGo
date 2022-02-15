@@ -89,25 +89,27 @@ def mapview():
     # creating a map in the view
     mymap = Map(
         identifier="view-side",
-        lat=45.069011,
-        lng=7.693216,
-        markers=[(45.069011, 7.693216)]
+        lat=45.0578564352,
+        lng=7.65664237342,
+        markers=[(45.0578564352, 7.65664237342)]
     )
     sndmap = Map(
         identifier="sndmap",
-        lat=45.069011,
-        lng=7.693216,
+        lat=45.0578564352,
+        lng=7.65664237342,
+        style="height:900px;width:900px;margin:4;",
+        zoom=18.5,
         markers=[
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-             'lat': 45.069011,
-             'lng': 7.693216,
+             'lat': 45.0578564352,
+             'lng': 7.65664237342,
              'infobox': "<b>Hello World</b>"
           },
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-             'lat':45.069011,
-             'lng': 7.693216,
+             'lat':45.0578564352,
+             'lng': 7.65664237342,
              'infobox': "<b>Hello World from other place</b>"
           }
         ]
@@ -209,11 +211,12 @@ def pro():
 def pr():
     return render_template('grid.html')
 
+""""
 @app.route('/go/<>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
 def go():
     email = session['email']
     if email:
         return None
-
+"""""
 if __name__ == '__main__':
     app.run(debug=True)

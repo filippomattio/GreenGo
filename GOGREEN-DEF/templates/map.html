@@ -33,11 +33,15 @@
 
 
     <!-- Custom styles for this template -->
-    <link href="static/css/signin.css" rel="stylesheet">
+
       <link href="static/css/carousel.css" rel="stylesheet">
+
     {{"decoupled-map"|googlemap_js(45.069011, 7.693216, markers=[(45.069011, 7.693216)])}} {{mymap.js}} {{sndmap.js}}
   </head>
+
+
   <body>
+  <div class="head">
  <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
@@ -74,9 +78,19 @@
     </div>
   </nav>
 </header>
+  </div>
+<div class="title" align="center" style='margin-top:4rem; margin-bottom: 3rem ; padding:5px; align-content: center';>
 
-    <h2>Map</h2>
- <h2>    ----    </h2>
- <p>{{sndmap.html}}</p>
+    <h2 >Map</h2>
+
+ </div>
+
+ <div class="map" align="center" >
+
+     {{sndmap.html}}
+
+
+</div>
+
   </body>
 </html>
