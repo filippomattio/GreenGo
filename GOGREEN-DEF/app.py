@@ -47,8 +47,8 @@ from model import User, Role, SharingCompany
 from form import RegistrationForm, LoginForm, ChangeForm
 
 
-
-""""@app.before_first_request
+"""
+@app.before_first_request
 def create_db():
     db.drop_all()
     db.create_all()
@@ -60,11 +60,11 @@ def create_db():
                       role_name=role_admin)
 
     s1 = SharingCompany(name="Car2go", date_of_registration=date.today().strftime("%d%m%Y"),num_vehicles = 50,
-                        price_per_minute = 0.26, min_age = 18, type_vehicle = "electric")
+                        price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80")
     s2 = SharingCompany(name="Enjoy", date_of_registration=date.today().strftime("%d%m%Y"), num_vehicles =40,
-                        price_per_minute =0.30, min_age =18, type_vehicle ="hybrid")
+                        price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
     s3 = SharingCompany(name="Dot", date_of_registration=date.today().strftime("%d%m%Y"), num_vehicles =50,
-                        price_per_minute =0.11, min_age = 16, type_vehicle ="electric")
+                        price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
 
     db.session.add_all([role_admin, role_user])
     db.session.add(user_admin)
@@ -74,8 +74,8 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-
 """
+
 
 @app.route('/')
 def homepage():  # put application's code here
@@ -173,5 +173,8 @@ def set():
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
     return render_template('profile.html')
+@app.route('/grid', methods=['POST', 'GET'])
+def pr():
+    return render_template('grid.html')
 if __name__ == '__main__':
     app.run(debug=True)

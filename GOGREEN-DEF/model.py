@@ -31,7 +31,14 @@ class SharingCompany(db.Model):
     price_per_minute = db.Column(db.Float, nullable=False)
     min_age = db.Column(db.Integer, nullable = False, default = 18)
     type_vehicle = db.Column(db.String(20), nullable = False)
+    type_motor = db.Column(db.String(20), nullable = False)
+    points = db.Column(db.Integer, nullable=False)
 
     def to_string(self):
         s = str(str(self.price_per_minute) + " euro/minute")
         return s
+
+class Transportation(db.Model):
+    __tablename__ = "transportations"
+    user = db.Column(db.String, primary_key=True)
+    sharing_company = b.Column(db.String(50), primary_key=True)
