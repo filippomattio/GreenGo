@@ -138,6 +138,9 @@ def logout_page():
     session.clear()
     return redirect(url_for('homepage'))
 
+@app.route('/map', methods=['POST', 'GET'])
+def map():
+    return render_template('map.html')
 
 @app.route('/registration', methods=['POST', 'GET'])
 def register_page():
