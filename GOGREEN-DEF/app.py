@@ -103,37 +103,37 @@ def mapview():
         zoom=19,
         markers=[
             {
-                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
                 'lat': 45.05635616,
                 'lng': 7.65589579,
                 'infobox': "<b>Hello World</b>"
             },
             {
-                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
                 'lat': 45.05809029,
                 'lng': 7.65602811,
                 'infobox': "<b>Hello World</b>"
             },
             {
-                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
                 'lat': 45.0578564352,
                 'lng': 7.65664237342,
                 'infobox': "<b>Hello World</b>"
             },
             {
-                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
                 'lat': 45.0578564352,
                 'lng': 7.65664237342,
                 'infobox': "<b>Hello World</b>"
             },
           {
-             'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
              'lat': 45.0578564352,
              'lng': 7.65664237342,
              'infobox': "<b>Hello World</b>"
           },
           {
-             'icon': "<img src='GOGREEN-DEF/monoicon.png' width='100' height='100'/>",
+             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
              'lat':45.0578564352,
              'lng': 7.65664237342,
              'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
