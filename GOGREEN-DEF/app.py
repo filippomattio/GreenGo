@@ -5,6 +5,8 @@ from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
+
+
 # upload image
 from flask_uploads import UploadSet
 from flask_uploads import configure_uploads
@@ -100,14 +102,38 @@ def mapview():
         style="height:900px;width:900px;margin:4;",
         zoom=19,
         markers=[
+            {
+                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'lat': 45.05635616,
+                'lng': 7.65589579,
+                'infobox': "<b>Hello World</b>"
+            },
+            {
+                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'lat': 45.05809029,
+                'lng': 7.65602811,
+                'infobox': "<b>Hello World</b>"
+            },
+            {
+                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'lat': 45.0578564352,
+                'lng': 7.65664237342,
+                'infobox': "<b>Hello World</b>"
+            },
+            {
+                'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
+                'lat': 45.0578564352,
+                'lng': 7.65664237342,
+                'infobox': "<b>Hello World</b>"
+            },
           {
-             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+             'icon': 'C:/Users/axelp/PycharmProjects/flaskProject4defi-gogreen/GOGREEN-DEF/monoicon.png',
              'lat': 45.0578564352,
              'lng': 7.65664237342,
              'infobox': "<b>Hello World</b>"
           },
           {
-             'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+             'icon': "<img src='GOGREEN-DEF/monoicon.png' width='100' height='100'/>",
              'lat':45.0578564352,
              'lng': 7.65664237342,
              'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
