@@ -104,7 +104,11 @@
   </div>
 <div class="title" align="center" style='margin-top:4rem; margin-bottom: 3rem ; padding:5px; align-content: center';>
 
-    <h2 >Map</h2>
+    {% if session.get('username')%}
+                   <h1>Welcome {{ username }}, choose your transport</h1>
+    {% else %}
+                      <h1>Welcome new user, register now and choose your transport!</h1>
+              {% endif %}
 
  </div>
 
