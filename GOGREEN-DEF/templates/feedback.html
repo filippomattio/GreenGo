@@ -1,0 +1,34 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+    <h1>Hi {{ user.name }}, thanks for giving us your feedback!</h1>
+
+        <form class="row g-3" method="post">
+    {{ form.hidden_tag() }}
+
+  <div class="col-md-8">
+    <label for= '{{ form.rank.label }}' class="form-label">{{ form.rank.label }}</label>
+    {{ form.rank(class='form-control') }}
+      {% for error in form.rank.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+  </div>
+
+  <div class="col-md-8">
+    <label for= '{{ form.reason.label }}' class="form-label">{{ form.reason.label }}</label>
+    {{ form.reason(class='form-control') }}
+      {% for error in form.reason.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+
+  </div>
+
+  <div class="col-12">
+    <div>
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
+   </div>
+
+</form>
+
+{% endblock content %}
