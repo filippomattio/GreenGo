@@ -1,0 +1,33 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+    <h1>Hi {{ user.name }}, why do you want to delete your account?</h1>
+
+        <form class="row g-3" method="post">
+    {{ form.hidden_tag() }}
+
+  <div class="col-md-8">
+    <label for= '{{ form.motivation.label }}' class="form-label">{{ form.motivation.label }}</label>
+    {{ form.motivation(class='form-control') }}
+      {% for error in form.motivation.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+  </div>
+
+  <div class="col-md-8">
+    <label for= '{{ form.other.label }}' class="form-label">{{ form.other.label }}</label>
+    {{ form.other(class='form-control') }}
+      {% for error in form.other.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+
+  </div>
+
+  <div class="col-12">
+    <div>
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
+   </div>
+
+</form>
+{% endblock content %}

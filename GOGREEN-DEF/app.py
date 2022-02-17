@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import datetime, date
 from flask import Flask
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -31,7 +31,7 @@ app.config['MAIL_USERNAME'] = "greengo2022@mail.com" #qui bisogna mettere il mio
 app.config['MAIL_PASSWORD'] = "Greengo2022"
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
-app.config['MAIL_PORT'] = 465
+app.config['MAIL_PORT'] = 587
 # Upload Configuration
 app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd() + "/static"
 
@@ -45,8 +45,8 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany
-from form import RegistrationForm, LoginForm, ChangeForm
+from model import User, Role, SharingCompany, Transportation
+from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm
 
 
 """
@@ -57,19 +57,19 @@ def create_db():
     role_admin = Role(role_name='Admin')
     role_user = Role(role_name='User')
     pass_c = bcrypt.generate_password_hash("123456")  # per criptare la password
-    user_admin = User( email="admin@admin.com", name="Mohammad", family_name="Ghazi", date_of_birth="1999/06/03",
-                       password=pass_c,
-                      role_name=role_admin)
+    #user_admin = User( email="admin@admin.com", name="Mohammad", family_name="Ghazi", date_of_birth="1999/06/03",
+     #                  password=pass_c,
+      #                role_name=role_admin)
 
-    s1 = SharingCompany(name="Car2go", date_of_registration=date.today().strftime("%d%m%Y"),num_vehicles = 50,
+    s1 = SharingCompany(name="Car2go", date_of_registration=date.today(),num_vehicles = 50,
                         price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80")
-    s2 = SharingCompany(name="Enjoy", date_of_registration=date.today().strftime("%d%m%Y"), num_vehicles =40,
+    s2 = SharingCompany(name="Enjoy", date_of_registration=date.today(), num_vehicles =40,
                         price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
-    s3 = SharingCompany(name="Dot", date_of_registration=date.today().strftime("%d%m%Y"), num_vehicles =50,
+    s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
                         price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
 
     db.session.add_all([role_admin, role_user])
-    db.session.add(user_admin)
+   # db.session.add(user_admin)
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
@@ -89,26 +89,30 @@ def mapview():
     # creating a map in the view
     mymap = Map(
         identifier="view-side",
-        lat=45.069011,
-        lng=7.693216,
-        markers=[(45.069011, 7.693216)]
+        lat=45.0578564352,
+        lng=7.65664237342,
+        markers=[(45.0578564352, 7.65664237342)]
     )
     sndmap = Map(
         identifier="sndmap",
-        lat=45.069011,
-        lng=7.693216,
+        lat=45.0578564352,
+        lng=7.65664237342,
+        style="height:900px;width:900px;margin:4;",
+        zoom=19,
         markers=[
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-             'lat': 45.069011,
-             'lng': 7.693216,
+             'lat': 45.0578564352,
+             'lng': 7.65664237342,
              'infobox': "<b>Hello World</b>"
           },
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-             'lat':45.069011,
-             'lng': 7.693216,
-             'infobox': "<b>Hello World from other place</b>"
+             'lat':45.0578564352,
+             'lng': 7.65664237342,
+             'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
+                        "<br>"
+                        "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
           }
         ]
     )
@@ -175,6 +179,8 @@ def logout_page():
 def register_page():
     form = RegistrationForm()
     if form.validate_on_submit():
+        if not form.check_password(form.password.data) or not form.check_email(form.email.data):
+            return render_template('registration.html', form=form)
         role_name = Role.query.filter_by(role_name="User").first()
         pass_c = bcrypt.generate_password_hash(form.password.data)
         new_user = User(email=form.email.data,
@@ -194,26 +200,85 @@ def register_page():
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
 
+def get_minage():
+    ord = SharingCompany.query.order_by(SharingCompany.min_age).all()
+    minim = ord[0].min_age
+    return minim
 @app.route('/reserve', methods=['POST', 'GET'])
 def confront_price():
-    ord = SharingCompany.query.order_by(SharingCompany.price_per_minute)
-    return render_template('reserve.html', ord=ord)
+    user = User.query.filter_by(email=session['email']).first()
+    today = date.today()
+    age = today.year - user.date_of_birth.year
+    if today.month < user.date_of_birth.month or (today.month == user.date_of_birth.month and today.day < user.date_of_birth.day):
+        age -= 1
+    ord = SharingCompany.query.filter(SharingCompany.min_age <= age).order_by(SharingCompany.price_per_minute).all()
+    tot = len(ord)
+    minim = get_minage()
+    return render_template('reserve.html', ord=ord, min=minim, tot=tot)
 
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
     return render_template('settings.html')
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
-    return render_template('profile.html')
+    return redirect(url_for('go', name='profile'))
 @app.route('/grid', methods=['POST', 'GET'])
 def pr():
     return render_template('grid.html')
 
-"""@app.route('/go/<>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
-def go():
-    email = session['email']
-    if email:
-        return None"""
 
+@app.route('/go/<string:name>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
+def go(name):
+    email = session['email']
+    user = User.query.filter_by(email=email).first()
+    if email and name != 'profile':
+        tr = Transportation(user=email, sharing_company=name, date=datetime.now())
+        db.session.add(tr)
+        db.session.commit()
+    ass = Transportation.query.filter_by(user=email).order_by(Transportation.date)
+    count = 0
+    points=0
+    tot=0
+    avg=0
+    dict = {}
+    for tr in ass:
+        sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+        dict[tr.date] = sh_co
+        points=points+sh_co.points
+        count=count+1
+        tot=tot+sh_co.price_per_minute
+    if count>0:
+        avg = float("{:.2f}".format(tot/count))
+    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg)
+
+@app.route('/delete', methods=['POST', 'GET'])
+def delete():
+    email = session['email']
+    form = DeleteForm()
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if form.validate_on_submit():
+            tr = Transportation.query.filter_by(user=email).all()
+            for tt in tr:
+                db.session.delete(tt)
+            db.session.delete(user)
+            db.session.commit()
+            return redirect(url_for('logout_page'))
+    return render_template('delete.html', form=form, user=user)
+
+@app.route('/feedback', methods=['POST', 'GET'])
+def give_feedback():
+    email = session['email']
+    form = FeedbackForm()
+    user = User.query.filter_by(email=email).first()
+    if email:
+        if form.validate_on_submit():
+            #devo aggiungere il feedback al database
+            return render_template('reserve.html')
+    return render_template('feedback.html', form=form, user=user)
+
+@app.route('/footers', methods=['POST', 'GET'])
+def foot():
+    return render_template('footers.html')
 if __name__ == '__main__':
     app.run(debug=True)

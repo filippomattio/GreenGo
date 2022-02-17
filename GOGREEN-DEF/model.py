@@ -8,10 +8,14 @@ class User(db.Model):
     email = db.Column(db.String(100), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     family_name = db.Column(db.String(100), nullable=False)
-    date_of_birth = db.Column(db.String(10), nullable=False)
+    date_of_birth = db.Column(db.Date, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    date_of_registration = db.Column(db.DateTime, default=datetime.now())
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     transportations = db.relationship("Transportation", backref="user_tr")
+
+    def get_date_of_registration(self):
+        return self.date_of_registration.strftime("%Y-%m-%d")
 
     def get_password(self):
         return self.password
@@ -27,7 +31,7 @@ class Role(db.Model):
 class SharingCompany(db.Model):
     __tablename__ = "sharing_companies"
     name = db.Column(db.String(50), primary_key=True)
-    date_of_registration = db.Column(db.String)
+    date_of_registration = db.Column(db.Date)
     num_vehicles = db.Column(db.Integer, nullable=False, default=1)
     price_per_minute = db.Column(db.Float, nullable=False)
     min_age = db.Column(db.Integer, nullable = False, default = 18)
@@ -44,4 +48,7 @@ class Transportation(db.Model):
     __tablename__ = "transportations"
     user = db.Column(db.String(100), db.ForeignKey('users.email'), primary_key=True)
     sharing_company = db.Column(db.String(50), db.ForeignKey('sharing_companies.name'), primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.now())
+    date = db.Column(db.DateTime, default=datetime.now(), primary_key=True)
+    def getDate(self):
+        s = self.date.strftime("%Y-%m-%d %H:%M:%S")
+        return s

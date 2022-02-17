@@ -4,7 +4,7 @@
 {% block content %}
 
 
-
+{% if tot>0 %}
 <h1>Reserve your green mean of transport!</h1>
 
 
@@ -22,7 +22,7 @@
   </a>
     </div>
     <div class="col-6 col-md-2">
-    <form action="/go<{{ sc.name }}>">
+    <form action="/go/{{ sc.name }}">
         <input type="submit" class="btn btn-primary" value="Reserve now">
     </form>
           </div>
@@ -31,17 +31,20 @@
 
 {% endfor %}
 </div>
-
-
+{% endif %}
+    {% if tot==0 %}
+    <h1>We are sorry, you are too young to reserve a mean of transport!</h1>
+        <p>Now, minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
+        <p>Please contact use for any further information.</p>
+{% endif %}
 
 
 
 <div class="col-md-6">
 
-    {% block content%}
 
 
-        {% endblock %}
+
 
     <--! qui si dovrebbe mettere la mappa-->
     
@@ -49,7 +52,6 @@
 
 
 
-    </div>
 
 
 {% endblock content %}

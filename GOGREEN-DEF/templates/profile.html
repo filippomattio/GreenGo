@@ -17,6 +17,10 @@
 
 
     <style>
+
+        .pt-3{
+            padding-top: 5rem !important;
+        }
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -34,11 +38,11 @@
 
     
     <!-- Custom styles for this template -->
-    <!--<link href="static/css/dashboard.css" rel="stylesheet">-->
+    <link href="static/css/dashboard.css" rel="stylesheet">
       <link href="static/css/carousel.css" rel="stylesheet">
   </head>
-  <body>
-    
+
+
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
@@ -75,37 +79,37 @@
     </div>
   </nav>
 </header>
-
+<body>
 <div class="container-fluid">
   <div class="row">
     <div id="sidebarMenu" class="col-md-3">
       <div class="position-sticky pt-3">
         <ul class="nav flex-column">
           <li class="nav-item">
-              Filippo Mattio
+              {{ user.name }} {{ user.family_name }}
           </li>
           <li class="nav-item">
 
-              Data di nascita : 03/06/1999
-
-          </li>
-          <li class="nav-item">
-
-              Email: filippomattio3@gmail.com
+              Date of birth: {{ user.date_of_birth }}
 
           </li>
           <li class="nav-item">
 
-              Registrato il 15/02/2022
+              Email: {{ user.email}}
 
           </li>
           <li class="nav-item">
 
-              Totale veicoli presi: 12
+              Registered on Greengo on: {{ user.get_date_of_registration() }}
 
           </li>
           <li class="nav-item">
-            Totale punteggio: 18
+
+              Total means taken: {{ count }}
+
+          </li>
+          <li class="nav-item">
+            Total points: {{ points }}
           </li>
         </ul>
 
@@ -116,9 +120,16 @@
     <main class="col-md-9">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Summary</h1>
-      </div>
 
-     <!-- qua devo mettere il riepilogo-->
+      </div>
+        <p>Hi {{ user.name }}, thanks for being an active user!</p>
+          {% if count>0 %}
+          <p>Up to now, you have accumulated a total of {{ points }} points in {{ count }} travel{% if count>1 %}s{% endif %}!</p>
+              <p>You have spent on average {{ avg }} $ per minute.</p>
+              <p>Please, <a href="/feedback">click here</a> to give us a feedback!</p>
+              <p>See below your travels' records</p>
+      {% endif %}
+
 
       <h2>History records</h2>
     {% if list %}
@@ -131,7 +142,7 @@
               <th scope="col">Type vehicle</th>
               <th scope="col">Type motor</th>
               <th scope="col">Date</th>
-              <th scope="col">Price per minute ($ / min)</th>
+              <th scope="col">$ / min</th>
               <th scope="col">Points</th>
             </tr>
           </thead>
@@ -139,13 +150,13 @@
 
           {% for ass in list %}
             <tr>
-              <td>{{ i }}</td>
-              <td>{{ass.SharingCompany}}</td>
-              <td>{{ ass.SharingCompany.type_vehicle }}</td>
-              <td>{{ ass.SharingCompany.type_motor }}</td>
-              <td>{{ ass.Date }}</td>
-              <td>{{ ass.SharingCompany.price_per_minute }}</td>
-              <td>{{ ass.SharingCompany.points }}</td>
+              <td>1</td>
+              <td>{{ass.sharing_company}}</td>
+              <td>{{ dict[ass.date].type_vehicle }}</td>
+              <td>{{ dict[ass.date].type_motor }}</td>
+              <td>{{ ass.getDate() }}</td>
+              <td>{{ dict[ass.date].price_per_minute }}</td>
+              <td>{{ dict[ass.date].points }}</td>
             </tr>
           {% endfor %}
 
@@ -153,9 +164,7 @@
         </table>
         </div>
       {% endif %}
-    {% else %}
-          <p>You have never used GreenGo to take a mean of transport!</p>
-        {% endelse %}
+
     </main>
   </div>
 </div>
@@ -163,6 +172,6 @@
 
     <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-      <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="dashboard.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
   </body>
 </html>

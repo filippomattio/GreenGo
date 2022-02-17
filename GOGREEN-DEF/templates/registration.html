@@ -34,7 +34,7 @@
   </div>
   <div class="col-6 col-md-4">
     <label for= '{{ form.date_of_birth.label }}' class="form-label">{{ form.date_of_birth.label }}</label>
-    {{ form.date_of_birth(class='form-control', placeholder='DD/MM/YYYY') }}
+    {{ form.date_of_birth(type='date',class='form-control', placeholder='YYYY-MM-DD') }}
       {% for error in form.date_of_birth.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
@@ -45,6 +45,13 @@
       {% for error in form.password.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
+      {% with messages = get_flashed_messages(category_filter=["errorPassword"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-danger">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
   </div>
 
   <div class="col-12">
@@ -52,6 +59,8 @@
         {{ form.submit(class='btn btn-primary') }}
     </div>
    </div>
+  <div class="col-6">
+      <p>Have you registered yet? Click <a href="/login3">here</a> to login</p>
   </div>
 </form>
 
