@@ -96,9 +96,11 @@ def mapview():
         markers=[(45.0578564352, 7.65664237342)]
     )
     sndmap = Map(
+
         identifier="sndmap",
         lat=45.0578564352,
         lng=7.65664237342,
+        center_on_user_location=True,
         style="height:900px;width:900px;margin:4;",
         zoom=19,
         markers=[
@@ -138,11 +140,16 @@ def mapview():
              'lng': 7.65664237342,
              'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
                         "<br>"
+                        "<form action='https://ridedott.com/it'>"
+                        "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                        " </form>"
+                        "<br>"
                         "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
           }
         ]
     )
-    return render_template('map.html', mymap=mymap, sndmap=sndmap)
+    username = session.get('username')
+    return render_template('map.html', mymap=mymap, sndmap=sndmap, username=username)
 
 def send_mail(to, subject, template, **kwargs):  # to is could be a list
     msg = Message(subject, recipients=[to], sender=app.config['MAIL_USERNAME'])
