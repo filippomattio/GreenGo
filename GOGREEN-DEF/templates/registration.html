@@ -26,9 +26,9 @@
            {% endfor %}
   {% with messages = get_flashed_messages(category_filter=["errorEmail"]) %}
    {% if messages %}
-      {% for message in messages %}
-         <div class="alert-danger">{{ message }}</div>
-      {% endfor %}
+
+         <div class="alert-danger">{{ messages[1] }}</div>
+
    {% endif %}
 {% endwith %}
   </div>
