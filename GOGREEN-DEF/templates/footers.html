@@ -29,12 +29,18 @@
           font-size: 3.5rem;
         }
       }
+       .pt-3{
+          padding-top: 4rem!important;
+      }
     </style>
 
     
     <!-- Custom styles for this template -->
     <link href="static/css/footers.css" rel="stylesheet">
-    <link href="static/css/navbar-top.css" rel="stylesheet">
+    <link href="static/css/sticky-footer-navbar.css" rel="stylesheet">
+      <link href="static/css/signin.css" rel="stylesheet">
+      <link href="static/css/features.css" rel="stylesheet">
+      <link href="static/css/dashboard.css" rel="stylesheet">
   </head>
   <body>
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -57,11 +63,11 @@
           <li class="nav-item">
             <a class="nav-link {% if 'email' in session %}disabled{% endif %}" href="/registration">Registration</a>
                     <li class="nav-item">
-            <a class="nav-link {% if 'email' in session %}disabled{% endif %}" href="/logout">Logout</a>
+            <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/logout">Logout</a>
           </li>
 
             <li class="nav-item">
-            <a class="nav-link {% if 'email' in session %}disabled{% endif %}" href="/settings">Settings</a>
+            <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/settings">Settings</a>
           </li>
         </ul>
         <form class="d-flex">
@@ -88,7 +94,16 @@
 </svg>
 
 
+
+<main>
 <div class="container">
+    {% block content %}
+
+    {% endblock content %}
+</div>
+</main>
+
+      <div class="container">
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
     <div class="col-md-4 d-flex align-items-center">
       <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
@@ -104,12 +119,6 @@
     </ul>
   </footer>
 </div>
-<main>
-    {% block content %}
-
-    {% endblock content %}
-</main>
-
     <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
       

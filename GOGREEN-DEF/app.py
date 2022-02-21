@@ -195,7 +195,7 @@ def change():
             user.password = pass_c
             db.session.add(user)
             db.session.commit()
-            flash("Password changed succesfully!", 'newPassword')
+            flash("Password changed successfully!", 'newPassword')
             #send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
             #       email=form.email.data)
             return render_template('change.html', form=form)
@@ -255,9 +255,7 @@ def set():
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
     return redirect(url_for('go', name='profile'))
-@app.route('/grid', methods=['POST', 'GET'])
-def pr():
-    return render_template('grid.html')
+
 
 
 @app.route('/go/<string:name>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
