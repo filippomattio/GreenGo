@@ -82,16 +82,17 @@ def create_db():
 
 
 @app.route('/')
-def homepage():  # put application's code here
+def homepage():
     username = session.get('username')
     tot = Rating.query.all()
     count = 0
     rating = 0
+    avg=0
     for rt in tot:
         rating = rating + rt.rank
         count = count + 1
     if count > 0:
-        avg = float("{:.1f}".format(rating / count))
+        avg = float("{:.2f}".format(float(rating) / float(count)))
     return render_template("home.html", username=username, rating=avg, count=count)
 
 @app.route("/map")
@@ -317,7 +318,7 @@ def give_feedback():
             rating = Rating(user=email, rank=form.rank.data, reason=form.reason.data)
             db.session.add(rating)
             db.session.commit()
-            return render_template('home.html')
+            return redirect(url_for('homepage'))
     return render_template('feedback.html', form=form, user=user)
 
 @app.route('/footers', methods=['POST', 'GET'])
