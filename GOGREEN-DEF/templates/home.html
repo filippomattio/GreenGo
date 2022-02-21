@@ -1,4 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
-
+<p>Welcome to GreenGo, the green site of renting means of transport!</p>
+    {% if count>0 %}
+    <p>Average rating: {{ rating }} out of 5 ({{ count }} ratings)</p>
+    {% endif %}
 {% endblock content %}

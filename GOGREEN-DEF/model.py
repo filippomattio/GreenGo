@@ -52,3 +52,17 @@ class Transportation(db.Model):
     def getDate(self):
         s = self.date.strftime("%Y-%m-%d %H:%M:%S")
         return s
+
+class Rating(db.Model):
+    __tablename__ = "ratings"
+    user = db.Column(db.String(100), db.ForeignKey('users.email'), primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.now(), primary_key=True)
+    rank = db.Column(db.Integer)
+    reason = db.Column(db.String(200))
+
+class FinalFeedback(db.Model):
+    __tablename__ = "final_feedback"
+    user = db.Column(db.String(100),db.ForeignKey('users.email'), primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.now())
+    motivation = db.Column(db.Integer)
+    other = db.Column(db.String(200))

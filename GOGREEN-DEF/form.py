@@ -65,6 +65,6 @@ class DeleteForm(FlaskForm):
 
 class FeedbackForm(FlaskForm):
     rank = SelectField('Rank', choices=[('1','1'),('2','2'),('3','3'),('4','4'),('5','5')], validators=[DataRequired()])
-    reason = TextAreaField('Other reasons', validators=[Length(max=200)],
+    reason = TextAreaField('Why/Advice', validators=[Length(max=200)],
                           default="Please, explain here any bag of the app or any advice you want to give us")
     submit = SubmitField('Send feedback')

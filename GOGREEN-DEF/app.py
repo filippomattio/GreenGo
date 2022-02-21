@@ -47,7 +47,7 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany, Transportation
+from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm
 
 
@@ -78,13 +78,21 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-
 """
+
 
 @app.route('/')
 def homepage():  # put application's code here
     username = session.get('username')
-    return render_template("home.html", username=username)
+    tot = Rating.query.all()
+    count = 0
+    rating = 0
+    for rt in tot:
+        rating = rating + rt.rank
+        count = count + 1
+    if count > 0:
+        avg = float("{:.1f}".format(rating / count))
+    return render_template("home.html", username=username, rating=avg, count=count)
 
 @app.route("/map")
 def mapview():
@@ -289,9 +297,11 @@ def delete():
     user = User.query.filter_by(email=email).first()
     if user:
         if form.validate_on_submit():
+            ff = FinalFeedback(user=email, motivation=form.motivation.data, other=form.other.data)
             tr = Transportation.query.filter_by(user=email).all()
             for tt in tr:
                 db.session.delete(tt)
+            db.session.add(ff)
             db.session.delete(user)
             db.session.commit()
             return redirect(url_for('logout_page'))
@@ -304,8 +314,10 @@ def give_feedback():
     user = User.query.filter_by(email=email).first()
     if email:
         if form.validate_on_submit():
-            #devo aggiungere il feedback al database
-            return render_template('reserve.html')
+            rating = Rating(user=email, rank=form.rank.data, reason=form.reason.data)
+            db.session.add(rating)
+            db.session.commit()
+            return render_template('home.html')
     return render_template('feedback.html', form=form, user=user)
 
 @app.route('/footers', methods=['POST', 'GET'])
