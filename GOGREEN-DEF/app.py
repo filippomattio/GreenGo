@@ -222,17 +222,17 @@ def register_page():
     if form.validate_on_submit():
         if not form.check_password(form.password.data) or not form.check_email(form.email.data):
             return render_template('registration.html', form=form)
-        role_name = Role.query.filter_by(role_name="User").first()
-        pass_c = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(email=form.email.data,
-                        name=form.name.data,
-                        family_name=form.family_name.data,
-                        date_of_birth=form.date_of_birth.data,
-                        password=pass_c,
-                        role_name=role_name)
         if not form.validate_email(form):
             return render_template('registration.html', form=form)
         else:
+            role_name = Role.query.filter_by(role_name="User").first()
+            pass_c = bcrypt.generate_password_hash(form.password.data)
+            new_user = User(email=form.email.data,
+                            name=form.name.data,
+                            family_name=form.family_name.data,
+                            date_of_birth=form.date_of_birth.data,
+                            password=pass_c,
+                            role_name=role_name)
             db.session.add(new_user)
             db.session.commit()
            # send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
