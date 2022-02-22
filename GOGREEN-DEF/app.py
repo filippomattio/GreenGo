@@ -48,11 +48,11 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback
+from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback,Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm
 
 
-"""
+
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -70,16 +70,19 @@ def create_db():
                         price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
     s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
                         price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
-
+    m1 = Mean(id="1", sharing_company="Dot", lat=46.069044, lng=7.69346)
+    m2 = Mean(id="2", sharing_company="Dot", lat=45.069012, lng=7.6932162)
     db.session.add_all([role_admin, role_user])
    # db.session.add(user_admin)
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
+    db.session.add(m1)
+    db.session.add(m2)
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-"""
+
 
 
 @app.route('/')
@@ -144,20 +147,24 @@ def mapview():
              'lng': 7.65664237342,
              'infobox': "<b>Hello World</b>"
           },
-          {
-             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-             'lat':45.0578564352,
-             'lng': 7.65664237342,
-             'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
-                        "<br>"
-                        "<form action='https://ridedott.com/it'>"
-                        "<input type='submit' class='btn btn-primary' value='Reserve now'>"
-                        " </form>"
-                        "<br>"
-                        "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
-          }
+
         ]
     )
+    means = Mean.query
+    for m in means:
+        new_marker = {
+            'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
+            'lat': m.lat,
+            'lng': m.lng,
+            'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
+                       "<br>"
+                       "<form action='https://ridedott.com/it'>"
+                       "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                       " </form>"
+                       "<br>"
+                       "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
+        }
+        sndmap.markers.append(new_marker)
     username = session.get('username')
     return render_template('map.html', mymap=mymap, sndmap=sndmap, username=username)
 
