@@ -3,9 +3,10 @@ from datetime import datetime, date
 from flask import Flask
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
-
+from random import randint
 
 # upload image
 from flask_uploads import UploadSet
@@ -29,11 +30,11 @@ app.config['SECRET_KEY'] = 'hard to guess'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
-app.config['MAIL_USERNAME'] = "greengo2022@mail.com" #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
-app.config['MAIL_PASSWORD'] = "Greengo2022"
+app.config['MAIL_USERNAME'] = 'greengo2022@email.com' #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+app.config['MAIL_PASSWORD'] = 'Greengo2022'
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_PORT'] = 25
 # Upload Configuration
 app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd() + "/static"
 
@@ -48,7 +49,7 @@ configure_uploads(app, photos)
 patch_request_class(app)
 
 from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback
-from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm
+from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm
 
 
 """
@@ -205,10 +206,10 @@ def change():
             db.session.add(user)
             db.session.commit()
             flash("Password changed successfully!", 'newPassword')
-            #send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
-            #       email=form.email.data)
+            send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
             return render_template('change.html', form=form)
         return render_template('change.html', form=form)
+    return redirect(url_for('homepage'))
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout_page():
@@ -236,8 +237,7 @@ def register_page():
                             role_name=role_name)
             db.session.add(new_user)
             db.session.commit()
-           # send_mail(form.email.data, "New registration", "mail", name=form.name.data, password=form.password.data,
-            #       email=form.email.data)
+            send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -265,7 +265,20 @@ def set():
 def pro():
     return redirect(url_for('go', name='profile'))
 
-
+@app.route('/recover', methods=['POST', 'GET'])
+def recover_page():
+    form = RecoverForm()
+    if form.validate_on_submit():
+        if not form.check_email(form):
+            render_template("recover.html", form=form)
+        else:
+            user = User.query.filter_by(email=form.email.data).first()
+            new_pass = user.name[0:2] + user.family_name[0:2] + str(randint(1000, 100000000000))
+            pass_c = bcrypt.generate_password_hash(new_pass)
+            user.password = pass_c
+            send_mail(user.email, "New Password", "mailRecover", user=user, password=new_pass)
+            return render_template("recover.html", form=form)
+    return render_template("recover.html", form=form)
 
 @app.route('/go/<string:name>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
 def go(name):
@@ -275,11 +288,13 @@ def go(name):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now())
         db.session.add(tr)
         db.session.commit()
-    ass = Transportation.query.filter_by(user=email).order_by(Transportation.date)
+        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
+        return redirect(url_for('pro'))
+    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
     count = 0
-    points=0
-    tot=0
-    avg=0
+    points = 0
+    tot = 0
+    avg = 0
     dict = {}
     for tr in ass:
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()

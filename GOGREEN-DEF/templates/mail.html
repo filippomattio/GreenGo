@@ -5,11 +5,15 @@
     <title>Mail</title>
 </head>
 <body>
-<h1>Hello {{name}}! Welcome to GOGREEN</h1>
+<h1>Hello {{user.name}}! Welcome to GREENGO</h1>
 <p>Thank you so much for registering in our platform</p>
 <p>your information are </p>
-<p>Username: {{ username }}</p>
+<p>Name: {{ user.name }}</p>
+<p>Family name: {{ user.family_name }}</p>
+<p>Date of birth: {{ user.date_of_birth }}</p>
+<p>Email: {{ user.email }}</p>
 <p>Password: {{ password }}</p>
+<p>Please <a href="mailto:greengo2022@email.com">contact us</a> for any request</p>
 
 
 

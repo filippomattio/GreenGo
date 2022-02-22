@@ -13,10 +13,10 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     email = StringField('E-Mail:', validators=[DataRequired()])
-    name = StringField('Name:', validators=[DataRequired(), Length(min=3, max=10)])
-    family_name = StringField('Family name:', validators=[DataRequired(), Length(min=3, max=10)])
+    name = StringField('Name:', validators=[DataRequired(), Length(min=3, max=20)])
+    family_name = StringField('Family name:', validators=[DataRequired(), Length(min=3, max=20)])
     date_of_birth = DateField('Birthdate: ', validators=[DataRequired()], format='%Y-%m-%d')
-    password = PasswordField('Password:', validators=[DataRequired(), Length(min=3, max=10)])
+    password = PasswordField('Password:', validators=[DataRequired(), Length(min=8, max=20)])
     submit = SubmitField('Sign in')
 
     def validate_email(self, email):
@@ -46,16 +46,23 @@ class RegistrationForm(FlaskForm):
 
 
 class ChangeForm(FlaskForm):
-    old_password = PasswordField('Old Password:', validators=[DataRequired(), Length(min=3, max=10)])
-    new_password = PasswordField('New Password:', validators=[DataRequired(), Length(min=3, max=10)])
+    old_password = PasswordField('Old Password:', validators=[DataRequired(), Length(min=8, max=20)])
+    new_password = PasswordField('New Password:', validators=[DataRequired(), Length(min=8, max=20)])
     submit = SubmitField('Change Password')
 
     def validate_password(self, old_password, email):
         user = User.query.filter_by(email=email).first()
+        regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&-_])[A-Za-z\d@$!#%*?&-_]{8,20}$"
         if not user or not bcrypt.check_password_hash(old_password, self.old_password.data):
             flash("Old password not correct!", 'oldPassword')
             return False
-        return True
+        elif not re.search(regex, self.new_password.data):
+            flash(
+                'New Password must be between 8 and 20 characters and must contains at least one capital letter and one number. Special characters are admitted',
+                'errorPassword')
+            return False
+        else:
+            return True
 
 class DeleteForm(FlaskForm):
     motivation = RadioField(choices=[('1','low user experience quality'), ('2','limitated number of sharing companies'),
@@ -68,3 +75,18 @@ class FeedbackForm(FlaskForm):
     reason = TextAreaField('Why/Advice', validators=[Length(max=200)],
                           default="Please, explain here any bag of the app or any advice you want to give us")
     submit = SubmitField('Send feedback')
+
+class RecoverForm(FlaskForm):
+    email = StringField('Your E-Mail:', validators=[DataRequired()])
+    submit = SubmitField('Send email')
+
+    def check_email(self, email):
+        user = User.query.filter_by(email=self.email.data).first()
+        if not user:
+            flash(
+                'No user with this email registered on Greengo.',
+                'oldEmailError')
+            return False
+        else:
+            flash("Email with password sent to ' %s '. Please check your email inbox." % self.email.data, 'oldEmailSuccess')
+            return True

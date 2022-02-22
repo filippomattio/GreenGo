@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mail</title>
+</head>
+<body>
+<h1>Hello {{user.name}}, thank you for having reserved with Greengo!</h1>
+<p>You find below your reservation informations.</p>
+<p>Date: {{ transportation.getDate() }}</p>
+<p>Sharing company: {{ transportation.sharing_company }}</p>
+<p>Please give us a <a href="http://127.0.0.1:5000/feedback">feedback</a>.</p>
+</body>
+</html>

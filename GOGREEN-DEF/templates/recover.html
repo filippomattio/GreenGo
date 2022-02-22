@@ -1,0 +1,47 @@
+{% extends "footers.html" %}
+{% block content %}
+
+<h1>Recover your password</h1>
+<p>Please check your inbox email before compiling the for below: Greengo alwaays send you an email for any change of password.</p>
+    <p>Otherwise, please compile this form below: after it an email with your password
+        will be sent at the email address you write below (it must be the one you registered here for the first time).</p>
+
+    <form method="post">
+    {{ form.hidden_tag() }}
+
+
+        <div class="row">
+        <div class="col-2">
+    <label for= '{{ form.email.label }}' class="form-label">{{ form.email.label }}</label>
+        </div>
+        <div class="col-5 col-md-4">
+    {{ form.email(class='form-control', placeholder='Please enter here your email address') }}
+      {% for error in form.email.errors %}
+               <div class="alert-danger">{{ error }}</div>
+           {% endfor %}
+        {% with messages = get_flashed_messages(category_filter=["oldEmailError"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-danger">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["oldEmailSuccess"]) %}
+   {% if messages %}
+      {% for message in messages %}
+         <div class="alert-success">{{ message }}</div>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+        </div>
+  </div>
+    <div class="row">
+    <div class="col-6 col-md-4">
+    <div>
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
+   </div>
+        </div>
+    </form>
+
+{% endblock content %}
