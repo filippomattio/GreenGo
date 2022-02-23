@@ -20,6 +20,12 @@ class User(db.Model):
     def get_password(self):
         return self.password
 
+class Mean(db.Model):
+    __tablename__ = "means"
+    id = db.Column(db.Integer, primary_key=True)
+    sharing_company = db.Column(db.String(100), primary_key=True)
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
 
 class Role(db.Model):
     __tablename__ = "roles"
