@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
-from random import randint
+from random import randint, random, uniform
 
 # upload image
 from flask_uploads import UploadSet
@@ -14,6 +14,7 @@ from flask_uploads import configure_uploads
 from flask_uploads import IMAGES, patch_request_class
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
+
 # use this update to fix the  from werkzeug import secure_filename, FileStorage
 # ImportError: cannot import name 'secure_filename'
 # pip install -U Werkzeug==0.16.0
@@ -30,7 +31,8 @@ app.config['SECRET_KEY'] = 'hard to guess'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
-app.config['MAIL_USERNAME'] = 'greengo2022@email.com' #qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+app.config[
+    'MAIL_USERNAME'] = 'greengo2022@email.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
 app.config['MAIL_PASSWORD'] = 'Greengo2022'
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
@@ -48,11 +50,10 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback,Mean
-from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm
+from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback, Mean
+from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
-
-
+""""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -70,19 +71,24 @@ def create_db():
                         price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
     s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
                         price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
-    m1 = Mean(id="1", sharing_company="Dot", lat=46.069044, lng=7.69346)
-    m2 = Mean(id="2", sharing_company="Dot", lat=45.069012, lng=7.6932162)
+    for i in range(1000):
+        id=str(i)
+        lat=uniform(45.039541, 45.095419)
+        lng=uniform(7.634643, 7.688886)
+        m1 = Mean(id=id, sharing_company="Dot", lat=lat, lng=lng)
+        db.session.add(m1)
+
     db.session.add_all([role_admin, role_user])
    # db.session.add(user_admin)
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
-    db.session.add(m1)
-    db.session.add(m2)
+
+
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-
+"""
 
 
 @app.route('/')
@@ -91,7 +97,7 @@ def homepage():
     tot = Rating.query.all()
     count = 0
     rating = 0
-    avg=0
+    avg = 0
     for rt in tot:
         rating = rating + rt.rank
         count = count + 1
@@ -99,15 +105,11 @@ def homepage():
         avg = float("{:.2f}".format(float(rating) / float(count)))
     return render_template("home.html", username=username, rating=avg, count=count)
 
+
 @app.route("/map")
 def mapview():
     # creating a map in the view
-    mymap = Map(
-        identifier="view-side",
-        lat=45.0578564352,
-        lng=7.65664237342,
-        markers=[(45.0578564352, 7.65664237342)]
-    )
+
     sndmap = Map(
 
         identifier="sndmap",
@@ -116,39 +118,7 @@ def mapview():
         center_on_user_location=True,
         style="height:900px;width:900px;margin:4;",
         zoom=19,
-        markers=[
-            {
-                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-                'lat': 45.05635616,
-                'lng': 7.65589579,
-                'infobox': "<b>Hello World</b>"
-            },
-            {
-                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-                'lat': 45.05809029,
-                'lng': 7.65602811,
-                'infobox': "<b>Hello World</b>"
-            },
-            {
-                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-                'lat': 45.0578564352,
-                'lng': 7.65664237342,
-                'infobox': "<b>Hello World</b>"
-            },
-            {
-                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-                'lat': 45.0578564352,
-                'lng': 7.65664237342,
-                'infobox': "<b>Hello World</b>"
-            },
-          {
-             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
-             'lat': 45.0578564352,
-             'lng': 7.65664237342,
-             'infobox': "<b>Hello World</b>"
-          },
-
-        ]
+        markers=[]
     )
     means = Mean.query
     for m in means:
@@ -166,7 +136,8 @@ def mapview():
         }
         sndmap.markers.append(new_marker)
     username = session.get('username')
-    return render_template('map.html', mymap=mymap, sndmap=sndmap, username=username)
+    return render_template('map.html', sndmap=sndmap, username=username)
+
 
 def send_mail(to, subject, template, **kwargs):  # to is could be a list
     msg = Message(subject, recipients=[to], sender=app.config['MAIL_USERNAME'])
@@ -197,6 +168,7 @@ def login_page():
 
     return render_template('login3.html', form=form, email=email, password=password)
 
+
 @app.route('/change', methods=['POST', 'GET'])
 def change():
     form = ChangeForm()
@@ -218,11 +190,11 @@ def change():
         return render_template('change.html', form=form)
     return redirect(url_for('homepage'))
 
+
 @app.route('/logout', methods=['POST', 'GET'])
 def logout_page():
     session.clear()
     return redirect(url_for('homepage'))
-
 
 
 @app.route('/registration', methods=['POST', 'GET'])
@@ -249,28 +221,41 @@ def register_page():
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
 
+
 def get_minage():
     ord = SharingCompany.query.order_by(SharingCompany.min_age).all()
     minim = ord[0].min_age
     return minim
+
+
 @app.route('/reserve', methods=['POST', 'GET'])
 def confront_price():
+
     user = User.query.filter_by(email=session['email']).first()
     today = date.today()
     age = today.year - user.date_of_birth.year
-    if today.month < user.date_of_birth.month or (today.month == user.date_of_birth.month and today.day < user.date_of_birth.day):
+    if today.month < user.date_of_birth.month or (
+            today.month == user.date_of_birth.month and today.day < user.date_of_birth.day):
         age -= 1
     ord = SharingCompany.query.filter(SharingCompany.min_age <= age).order_by(SharingCompany.price_per_minute).all()
     tot = len(ord)
     minim = get_minage()
-    return render_template('reserve.html', ord=ord, min=minim, tot=tot)
+    form = ReservateForm()
+    if form.validate_on_submit():
+        session['company'] = form.sharing_company.data
+        return redirect(url_for('mapview'))
+    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form)
+
 
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
     return render_template('settings.html')
+
+
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
     return redirect(url_for('go', name='profile'))
+
 
 @app.route('/recover', methods=['POST', 'GET'])
 def recover_page():
@@ -287,7 +272,9 @@ def recover_page():
             return render_template("recover.html", form=form)
     return render_template("recover.html", form=form)
 
-@app.route('/go/<string:name>', methods=['POST', 'GET']) #tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
+
+@app.route('/go/<string:name>', methods=['POST',
+                                         'GET'])  # tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
 def go(name):
     email = session['email']
     user = User.query.filter_by(email=email).first()
@@ -306,12 +293,13 @@ def go(name):
     for tr in ass:
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         dict[tr.date] = sh_co
-        points=points+sh_co.points
-        count=count+1
-        tot=tot+sh_co.price_per_minute
-    if count>0:
-        avg = float("{:.2f}".format(tot/count))
+        points = points + sh_co.points
+        count = count + 1
+        tot = tot + sh_co.price_per_minute
+    if count > 0:
+        avg = float("{:.2f}".format(tot / count))
     return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg)
+
 
 @app.route('/delete', methods=['POST', 'GET'])
 def delete():
@@ -330,6 +318,7 @@ def delete():
             return redirect(url_for('logout_page'))
     return render_template('delete.html', form=form, user=user)
 
+
 @app.route('/feedback', methods=['POST', 'GET'])
 def give_feedback():
     email = session['email']
@@ -343,8 +332,11 @@ def give_feedback():
             return redirect(url_for('homepage'))
     return render_template('feedback.html', form=form, user=user)
 
+
 @app.route('/footers', methods=['POST', 'GET'])
 def foot():
     return render_template('footers.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)

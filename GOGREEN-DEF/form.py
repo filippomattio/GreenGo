@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField,PasswordField,FileField, DateField, RadioField, TextAreaField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, FileField, DateField, RadioField, TextAreaField, \
+    SelectField, HiddenField
 from wtforms.validators import DataRequired, Length,ValidationError
 from app import User, bcrypt
 from flask import flash
@@ -10,6 +11,10 @@ class LoginForm(FlaskForm):
     email = StringField('E-Mail:', validators=[DataRequired()])
     password = PasswordField('Password:', validators=[DataRequired()])
     submit = SubmitField('Login')
+
+class ReservateForm(FlaskForm):
+    sharing_company = HiddenField("Field 1")
+    submit = SubmitField('Discover more')
 
 class RegistrationForm(FlaskForm):
     email = StringField('E-Mail:', validators=[DataRequired()])

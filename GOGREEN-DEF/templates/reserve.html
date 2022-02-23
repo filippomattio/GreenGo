@@ -23,8 +23,14 @@
   </a>
     </div>
     <div class="col-6 col-md-2">
-    <form action="/go/{{ sc.name }}">
-        <input type="submit" class="btn btn-primary" value="Reserve now">
+      <form method="post">
+    {{ form.hidden_tag() }}
+
+
+        <div class="form-floating">
+       {{ form.sharing_company(id=sc.name) }}
+        </div>
+            {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
     </form>
           </div>
     </div>
