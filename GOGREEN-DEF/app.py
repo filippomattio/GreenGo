@@ -53,7 +53,7 @@ patch_request_class(app)
 from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback, Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
-""""
+"""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -94,7 +94,6 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-
 """
 
 @app.route('/')
@@ -322,7 +321,7 @@ def register_page():
                             role_name=role_name)
             db.session.add(new_user)
             db.session.commit()
-            #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
+            send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -387,7 +386,7 @@ def go(name,id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now())
         db.session.add(tr)
         db.session.commit()
-        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
+        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
         return redirect(url_for('reservation', id=id, name=name))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
     count = 0
