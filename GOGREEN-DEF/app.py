@@ -71,11 +71,17 @@ def create_db():
                         price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
     s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
                         price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
-    for i in range(1000):
+    for i in range(400):
         id=str(i)
         lat=uniform(45.039541, 45.095419)
         lng=uniform(7.634643, 7.688886)
         m1 = Mean(id=id, sharing_company="Dot", lat=lat, lng=lng)
+        db.session.add(m1)
+    for i in range(400):
+        id=str(i)
+        lat=uniform(45.039541, 45.095419)
+        lng=uniform(7.634643, 7.688886)
+        m1 = Mean(id=id, sharing_company="Enjoy", lat=lat, lng=lng)
         db.session.add(m1)
 
     db.session.add_all([role_admin, role_user])
@@ -88,8 +94,8 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
-"""
 
+"""
 
 @app.route('/')
 def homepage():
@@ -106,8 +112,8 @@ def homepage():
     return render_template("home.html", username=username, rating=avg, count=count)
 
 
-@app.route("/map")
-def mapview():
+@app.route("/map/<string:name>", methods=['GET', 'POST'])
+def mapview(name):
     # creating a map in the view
 
     sndmap = Map(
@@ -120,24 +126,83 @@ def mapview():
         zoom=19,
         markers=[]
     )
-    means = Mean.query
+    means = Mean.query.filter_by(sharing_company=name)
     for m in means:
-        new_marker = {
-            'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
+        if m.sharing_company=='Dot':
+            new_marker = {
+             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
             'lat': m.lat,
             'lng': m.lng,
-            'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
+            'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dot</a></div>"
                        "<br>"
-                       "<form action='https://ridedott.com/it'>"
+                       "<form action='/go/Dot/"+ str(m.id) +"'>"
                        "<input type='submit' class='btn btn-primary' value='Reserve now'>"
                        " </form>"
                        "<br>"
                        "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
         }
+        if m.sharing_company == 'Enjoy':
+            new_marker = {
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/car.png',
+                'lat': m.lat,
+                'lng': m.lng,
+                'infobox': "<div  ><a class='link_mono' href='https://enjoy.eni.com/it'>Enjoy</a></div>"
+                           "<br>"
+                           "<form action='/go/Enjoy/"+ str(m.id) +"'>"
+                           "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                           " </form>"
+                           "<br>"
+                           "<img src='data:image/png;base64,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' width='100' height='100'/>"
+            }
         sndmap.markers.append(new_marker)
     username = session.get('username')
     return render_template('map.html', sndmap=sndmap, username=username)
 
+@app.route("/map", methods=['GET', 'POST'])
+def mapview2():
+    # creating a map in the view
+
+    sndmap = Map(
+
+        identifier="sndmap",
+        lat=45.0578564352,
+        lng=7.65664237342,
+        center_on_user_location=True,
+        style="height:900px;width:900px;margin:4;",
+        zoom=19,
+        markers=[]
+    )
+    means = Mean.query.all()
+    for m in means:
+        if m.sharing_company=='Dot':
+            new_marker = {
+             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
+            'lat': m.lat,
+            'lng': m.lng,
+            'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
+                       "<br>"
+                       "<form action='/go/Dot/"+ str(m.id) +"'>"
+                       "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                       " </form>"
+                       "<br>"
+                       "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
+        }
+        if m.sharing_company == 'Enjoy':
+            new_marker = {
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/car.png',
+                'lat': m.lat,
+                'lng': m.lng,
+                'infobox': "<div  ><a class='link_mono' href='https://enjoy.eni.com/it'>Enjoy</a></div>"
+                           "<br>"
+                           "<form action='/go/Enjoy/" + str(m.id) + "'>"
+                           "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                           " </form>"
+                           "<br>"
+                           "<img src='data:image/png;base64,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' width='100' height='100'/>"
+            }
+        sndmap.markers.append(new_marker)
+    username = session.get('username')
+    return render_template('map.html', sndmap=sndmap, username=username)
 
 def send_mail(to, subject, template, **kwargs):  # to is could be a list
     msg = Message(subject, recipients=[to], sender=app.config['MAIL_USERNAME'])
@@ -145,6 +210,47 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
     msg.html = render_template(template + '.html', **kwargs)
     mail.send(msg)
 
+@app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
+def reservation(name,id):
+    # creating a map in the view
+    id = int(id)
+    sndmap = Map(
+
+        identifier="sndmap",
+        lat=45.0578564352,
+        lng=7.65664237342,
+        center_on_user_location=True,
+        style="height:900px;width:900px;margin:4;",
+        zoom=19,
+        markers=[]
+    )
+    m = Mean.query.filter_by(sharing_company=name, id=id).first()
+
+    if name=='Dot':
+            new_marker = {
+             'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
+            'lat': m.lat,
+            'lng': m.lng,
+            'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dot</a></div>"
+                       "<br>"
+                    
+                       "<br>"
+                       "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
+        }
+    if m.sharing_company == 'Enjoy':
+            new_marker = {
+                'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/car.png',
+                'lat': m.lat,
+                'lng': m.lng,
+                'infobox': "<div  ><a class='link_mono' href='https://enjoy.eni.com/it'>Enjoy</a></div>"
+                           "<br>"
+                          
+                           "<br>"
+                           "<img src='data:image/png;base64,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' width='100' height='100'/>"
+            }
+    sndmap.markers.append(new_marker)
+    username = session.get('username')
+    return render_template('reservation.html', sndmap=sndmap, username=username)
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
@@ -216,7 +322,7 @@ def register_page():
                             role_name=role_name)
             db.session.add(new_user)
             db.session.commit()
-            send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
+            #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -242,7 +348,6 @@ def confront_price():
     minim = get_minage()
     form = ReservateForm()
     if form.validate_on_submit():
-        session['company'] = form.sharing_company.data
         return redirect(url_for('mapview'))
     return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form)
 
@@ -254,7 +359,7 @@ def set():
 
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
-    return redirect(url_for('go', name='profile'))
+    return redirect(url_for('go', name='profile', id =0))
 
 
 @app.route('/recover', methods=['POST', 'GET'])
@@ -273,17 +378,17 @@ def recover_page():
     return render_template("recover.html", form=form)
 
 
-@app.route('/go/<string:name>', methods=['POST',
+@app.route('/go/<string:name>/<string:id>', methods=['POST',
                                          'GET'])  # tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
-def go(name):
+def go(name,id):
     email = session['email']
     user = User.query.filter_by(email=email).first()
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now())
         db.session.add(tr)
         db.session.commit()
-        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
-        return redirect(url_for('pro'))
+        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
+        return redirect(url_for('reservation', id=id, name=name))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
     count = 0
     points = 0

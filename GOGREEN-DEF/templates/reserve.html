@@ -23,13 +23,9 @@
   </a>
     </div>
     <div class="col-6 col-md-2">
-      <form method="post">
+      <form method="post" action="/map/{{ sc.name }}">
     {{ form.hidden_tag() }}
 
-
-        <div class="form-floating">
-       {{ form.sharing_company(id=sc.name) }}
-        </div>
             {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
     </form>
           </div>
