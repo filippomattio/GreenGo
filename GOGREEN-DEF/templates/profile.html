@@ -57,7 +57,7 @@
         <table class="table table-striped table-sm">
           <thead>
             <tr>
-              <th scope="col">#</th>
+              <th scope="col">ID</th>
               <th scope="col">Sharing Company</th>
               <th scope="col">Type vehicle</th>
               <th scope="col">Type motor</th>
@@ -70,7 +70,7 @@
 
           {% for ass in list %}
             <tr>
-              <td>1</td>
+              <td>{{ ass.id }}</td>
               <td>{{ass.sharing_company}}</td>
               <td>{{ dict[ass.date].type_vehicle }}</td>
               <td>{{ dict[ass.date].type_motor }}</td>

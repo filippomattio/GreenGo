@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date
+from datetime import datetime, date, time
 from flask import Flask
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -50,7 +50,7 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback, Mean
+from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
 """
@@ -58,19 +58,13 @@ from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackFo
 def create_db():
     db.drop_all()
     db.create_all()
-    role_admin = Role(role_name='Admin')
-    role_user = Role(role_name='User')
-    pass_c = bcrypt.generate_password_hash("123456")  # per criptare la password
-    #user_admin = User( email="admin@admin.com", name="Mohammad", family_name="Ghazi", date_of_birth="1999/06/03",
-     #                  password=pass_c,
-      #                role_name=role_admin)
 
     s1 = SharingCompany(name="Car2go", date_of_registration=date.today(),num_vehicles = 50,
-                        price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80")
+                        price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80", reservation_time=time(minute=15))
     s2 = SharingCompany(name="Enjoy", date_of_registration=date.today(), num_vehicles =40,
-                        price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
+                        price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40", reservation_time=time(minute=15))
     s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
-                        price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
+                        price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90", reservation_time=time(minute=15))
     for i in range(400):
         id=str(i)
         lat=uniform(45.039541, 45.095419)
@@ -84,17 +78,14 @@ def create_db():
         m1 = Mean(id=id, sharing_company="Enjoy", lat=lat, lng=lng)
         db.session.add(m1)
 
-    db.session.add_all([role_admin, role_user])
-   # db.session.add(user_admin)
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
 
 
     db.session.commit()
-    # user_query = User.query.filter_by(username="admin").first()
-    # print(user_query.name)
 """
+
 
 @app.route('/')
 def homepage():
@@ -311,14 +302,12 @@ def register_page():
         if not form.validate_email(form):
             return render_template('registration.html', form=form)
         else:
-            role_name = Role.query.filter_by(role_name="User").first()
             pass_c = bcrypt.generate_password_hash(form.password.data)
             new_user = User(email=form.email.data,
                             name=form.name.data,
                             family_name=form.family_name.data,
                             date_of_birth=form.date_of_birth.data,
-                            password=pass_c,
-                            role_name=role_name)
+                            password=pass_c)
             db.session.add(new_user)
             db.session.commit()
             send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
@@ -379,14 +368,16 @@ def recover_page():
 
 @app.route('/go/<string:name>/<string:id>', methods=['POST',
                                          'GET'])  # tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
-def go(name,id):
+def go(name, id):
     email = session['email']
     user = User.query.filter_by(email=email).first()
     if email and name != 'profile':
-        tr = Transportation(user=email, sharing_company=name, date=datetime.now())
+        tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
+        sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+        reservation_time = sh.reservation_time
         db.session.add(tr)
         db.session.commit()
-        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
+        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
         return redirect(url_for('reservation', id=id, name=name))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
     count = 0
