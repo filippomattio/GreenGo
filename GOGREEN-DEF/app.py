@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, date, time
-from flask import Flask
+from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
@@ -85,7 +85,15 @@ def create_db():
 
     db.session.commit()
 """
+@app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
+def setcookie(name, id, email, seconds):
+    resp = make_response(redirect(url_for('reservation', id=id, name=name)))
+    resp.set_cookie(email, 'reserved', max_age=seconds)
+    return resp
 
+def getcookie():
+    reserved = request.cookies.get('reserved')
+    return reserved
 
 @app.route('/')
 def homepage():
@@ -337,7 +345,7 @@ def confront_price():
     form = ReservateForm()
     if form.validate_on_submit():
         return redirect(url_for('mapview'))
-    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form)
+    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user)
 
 
 @app.route('/settings', methods=['POST', 'GET'])
@@ -375,11 +383,12 @@ def go(name, id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         reservation_time = sh.reservation_time
+        seconds = sh.reservation_time.hour*3600 + sh.reservation_time.minute*60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
-        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
-        return redirect(url_for('reservation', id=id, name=name))
-    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
+        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
+        return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
+    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
     count = 0
     points = 0
     tot = 0
@@ -393,7 +402,9 @@ def go(name, id):
         tot = tot + sh_co.price_per_minute
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
-    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg)
+    id_reservation = ass[0].id
+    name_reservation = ass[0].sharing_company
+    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg, id_reservation=id_reservation, name_reservation=name_reservation)
 
 
 @app.route('/delete', methods=['POST', 'GET'])
