@@ -8,7 +8,9 @@
 {% if tot>0 %}
 <h1>Reserve your green mean of transport!</h1>
 
-
+{% if user.email in request.cookies %}
+    <h2>You have already a reservation active, go to <a href="/profile">your profile</a> page to chek its status.</h2>
+          {% endif %}
 <div class="list-group">
 {% for sc in ord %}
     <div class="row">
@@ -25,8 +27,12 @@
     <div class="col-6 col-md-2">
       <form method="post" action="/map/{{ sc.name }}">
     {{ form.hidden_tag() }}
-
+            {% if user.email in request.cookies %}
+            {{ form.submit(class='w-100 btn btn-lg btn-primary disabled')}}
+          {% endif %}
+      {% if user.email not in request.cookies %}
             {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
+          {% endif %}
     </form>
           </div>
     </div>

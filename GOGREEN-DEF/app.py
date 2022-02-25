@@ -3,12 +3,10 @@ from datetime import datetime, date
 from flask import Flask
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
-import socket
 from sqlalchemy import desc
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
 from random import randint, random, uniform
-import geocoder
 
 # upload image
 from flask_uploads import UploadSet
@@ -55,7 +53,7 @@ patch_request_class(app)
 from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback, Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
-"""
+""""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -96,6 +94,7 @@ def create_db():
     db.session.commit()
     # user_query = User.query.filter_by(username="admin").first()
     # print(user_query.name)
+
 """
 
 @app.route('/')
@@ -162,11 +161,7 @@ def mapview(name):
 @app.route("/map", methods=['GET', 'POST'])
 def mapview2():
     # creating a map in the view
-    localIp = socket.gethostbyname(socket.gethostname())
-    g = geocoder.ip('me')
-    latlng = g.latlng
-    latUser = latlng[0]
-    lngUser = latlng[1]
+
     sndmap = Map(
 
         identifier="sndmap",
@@ -175,14 +170,7 @@ def mapview2():
         center_on_user_location=True,
         style="height:900px;width:900px;margin:4;",
         zoom=19,
-        markers=[
-               {
-        'icon': 'https://banner2.cleanpng.com/20180605/wo/kisspng-google-maps-google-map-maker-gps-navigation-system-dream-home-5b16489363fc95.2762115415281870274096.jpg',
-        'lat': latUser,
-        'lng': lngUser,
-
-    }
-        ]
+        markers=[]
     )
     means = Mean.query.all()
     for m in means:
@@ -334,7 +322,7 @@ def register_page():
                             role_name=role_name)
             db.session.add(new_user)
             db.session.commit()
-            send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
+            #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -399,7 +387,7 @@ def go(name,id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now())
         db.session.add(tr)
         db.session.commit()
-        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
+        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
         return redirect(url_for('reservation', id=id, name=name))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
     count = 0

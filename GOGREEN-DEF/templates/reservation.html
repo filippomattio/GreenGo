@@ -5,9 +5,106 @@
     <head>
     {{sndmap.js}}
     </head>
-    <div class="map">
+
+
+    <div class="map" align="center">
 
     {{ sndmap.html }}
     </div>
+
+
+    <div class="container-fluid">
+  <div class="row">
+    <div id="sidebarMenu" class="col-md-3">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+              {{ user.name }} {{ user.family_name }}
+          </li>
+          <li class="nav-item">
+
+              Date of birth: {{ user.date_of_birth }}
+
+          </li>
+          <li class="nav-item">
+
+              Email: {{ user.email}}
+
+          </li>
+          <li class="nav-item">
+
+              Registered on Greengo on: {{ user.get_date_of_registration() }}
+
+          </li>
+          <li class="nav-item">
+
+              Total means taken: {{ count }}
+
+          </li>
+          <li class="nav-item">
+            Total points: {{ points }}
+          </li>
+        </ul>
+
+
+      </div>
+    </div>
+
+    <main class="col-md-9">
+
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+{% if user.email in request.cookies %}
+          <p>You have a reservation active, click <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
+          {% endif %}
+        <h1 class="h2">Summary</h1>
+
+      </div>
+        <p>Hi {{ user.name }}, thanks for being an active user!</p>
+          {% if count>0 %}
+          <p>Up to now, you have accumulated a total of {{ points }} points in {{ count }} travel{% if count>1 %}s{% endif %}!</p>
+              <p>You have spent on average {{ avg }} $ per minute.</p>
+              <p>Please, <a href="/feedback">click here</a> to give us a feedback!</p>
+              <p>See below your travels' records</p>
+      {% endif %}
+
+
+      <h2>History records</h2>
+    {% if list %}
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Sharing Company</th>
+              <th scope="col">Type vehicle</th>
+              <th scope="col">Type motor</th>
+              <th scope="col">Date</th>
+              <th scope="col">$ / min</th>
+              <th scope="col">Points</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for ass in list %}
+            <tr>
+              <td>{{ ass.id }}</td>
+              <td>{{ass.sharing_company}}</td>
+              <td>{{ dict[ass.date].type_vehicle }}</td>
+              <td>{{ dict[ass.date].type_motor }}</td>
+              <td>{{ ass.getDate() }}</td>
+              <td>{{ dict[ass.date].price_per_minute }}</td>
+              <td>{{ dict[ass.date].points }}</td>
+            </tr>
+          {% endfor %}
+
+          </tbody>
+        </table>
+        </div>
+      {% endif %}
+
+    </main>
+  </div>
+</div>
+
 
 {% endblock content%}

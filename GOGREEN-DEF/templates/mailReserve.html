@@ -9,6 +9,8 @@
 <p>You find below your reservation informations.</p>
 <p>Date: {{ transportation.getDate() }}</p>
 <p>Sharing company: {{ transportation.sharing_company }}</p>
+<p>You have {{ reservation_time.hour }} hours, {{ reservation_time.minute }} minutes and {{ reservation_time.second }} seconds
+    to unlock your mean. At the end of the time, the reservation will be canceled automatically.</p>
 <p>Please give us a <a href="http://127.0.0.1:5000/feedback">feedback</a>.</p>
 </body>
 </html>
