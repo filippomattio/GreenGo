@@ -50,7 +50,7 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, Role, SharingCompany, Transportation, Rating, FinalFeedback, Mean
+from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
 """"
