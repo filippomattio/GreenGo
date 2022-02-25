@@ -25,6 +25,7 @@ from flask_googlemaps import Map
 
 app = Flask(__name__)
 
+
 app.config['GOOGLEMAPS_KEY'] = "AIzaSyDq0H2us352mUJEm1oiTuorwaZCz9ED8gU"
 GoogleMaps(app)
 app.config['SECRET_KEY'] = 'hard to guess'
