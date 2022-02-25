@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -88,7 +88,10 @@ def create_db():
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):
     resp = make_response(redirect(url_for('reservation', id=id, name=name)))
-    resp.set_cookie(email, 'reserved', max_age=seconds)
+    now = datetime.now()
+    value = now + timedelta(seconds=seconds)
+    value = value.strftime("%Y/%m/%d %H:%M:%S")
+    resp.set_cookie(email, value, max_age=seconds)
     return resp
 
 def getcookie():
@@ -396,9 +399,9 @@ def go(name, id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         reservation_time = sh.reservation_time
+        seconds = sh.reservation_time.hour*3600 + sh.reservation_time.minute*60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
-        seconds = reservation_time.hour * 3600 + reservation_time.minute * 60 + reservation_time.second
         #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
