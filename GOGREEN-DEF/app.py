@@ -1,6 +1,6 @@
 import os
-from datetime import datetime, date
-from flask import Flask
+from datetime import datetime, date, time, timedelta
+from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
@@ -26,7 +26,6 @@ from flask_googlemaps import Map
 # from form import FormContact,Registration,LogForm
 
 app = Flask(__name__)
-
 
 app.config['GOOGLEMAPS_KEY'] = "AIzaSyDq0H2us352mUJEm1oiTuorwaZCz9ED8gU"
 GoogleMaps(app)
@@ -56,24 +55,18 @@ patch_request_class(app)
 from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
 
-""""
+"""
 @app.before_first_request
 def create_db():
     db.drop_all()
     db.create_all()
-    role_admin = Role(role_name='Admin')
-    role_user = Role(role_name='User')
-    pass_c = bcrypt.generate_password_hash("123456")  # per criptare la password
-    #user_admin = User( email="admin@admin.com", name="Mohammad", family_name="Ghazi", date_of_birth="1999/06/03",
-     #                  password=pass_c,
-      #                role_name=role_admin)
 
     s1 = SharingCompany(name="Car2go", date_of_registration=date.today(),num_vehicles = 50,
-                        price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80")
+                        price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80", reservation_time=time(minute=15))
     s2 = SharingCompany(name="Enjoy", date_of_registration=date.today(), num_vehicles =40,
-                        price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40")
+                        price_per_minute =0.30, min_age =18, type_vehicle = "car", type_motor="hybrid", points="40", reservation_time=time(minute=15))
     s3 = SharingCompany(name="Dot", date_of_registration=date.today(), num_vehicles =50,
-                        price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90")
+                        price_per_minute =0.11, min_age = 16, type_vehicle = "scooter", type_motor="electric", points="90", reservation_time=time(minute=15))
     for i in range(400):
         id=str(i)
         lat=uniform(45.039541, 45.095419)
@@ -87,18 +80,25 @@ def create_db():
         m1 = Mean(id=id, sharing_company="Enjoy", lat=lat, lng=lng)
         db.session.add(m1)
 
-    db.session.add_all([role_admin, role_user])
-   # db.session.add(user_admin)
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
 
 
     db.session.commit()
-    # user_query = User.query.filter_by(username="admin").first()
-    # print(user_query.name)
-
 """
+@app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
+def setcookie(name, id, email, seconds):
+    resp = make_response(redirect(url_for('reservation', id=id, name=name)))
+    now = datetime.now()
+    value = now + timedelta(seconds=seconds)
+    value = value.strftime("%Y/%m/%d %H:%M:%S")
+    resp.set_cookie(email, value, max_age=seconds)
+    return resp
+
+def getcookie():
+    reserved = request.cookies.get('reserved')
+    return reserved
 
 @app.route('/')
 def homepage():
@@ -228,6 +228,9 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name,id):
     # creating a map in the view
+    cookie = request.cookies.get(session['email'])
+    if 'email' not in session or not cookie:
+        return redirect(url_for('homepage'))
     id = int(id)
     sndmap = Map(
 
@@ -265,7 +268,12 @@ def reservation(name,id):
             }
     sndmap.markers.append(new_marker)
     username = session.get('username')
-    return render_template('reservation.html', sndmap=sndmap, username=username)
+
+    now = datetime.now()
+    end = datetime.strptime(cookie, "%Y/%m/%d %H:%M:%S")
+    time = (end - now)
+    time = str(time).split(".")[0]
+    return render_template('reservation.html', sndmap=sndmap, username=username, time = time)
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
@@ -327,14 +335,12 @@ def register_page():
         if not form.validate_email(form):
             return render_template('registration.html', form=form)
         else:
-            role_name = Role.query.filter_by(role_name="User").first()
             pass_c = bcrypt.generate_password_hash(form.password.data)
             new_user = User(email=form.email.data,
                             name=form.name.data,
                             family_name=form.family_name.data,
                             date_of_birth=form.date_of_birth.data,
-                            password=pass_c,
-                            role_name=role_name)
+                            password=pass_c)
             db.session.add(new_user)
             db.session.commit()
             #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
@@ -364,7 +370,12 @@ def confront_price():
     form = ReservateForm()
     if form.validate_on_submit():
         return redirect(url_for('mapview'))
-    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form)
+    if user.email in request.cookies:
+        ass = Transportation.query.filter_by(user=user.email).order_by(desc(Transportation.date)).all()
+        id = ass[0].id
+        sh_co = ass[0].sharing_company
+        return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id)
+    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user)
 
 
 @app.route('/settings', methods=['POST', 'GET'])
@@ -395,16 +406,19 @@ def recover_page():
 
 @app.route('/go/<string:name>/<string:id>', methods=['POST',
                                          'GET'])  # tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
-def go(name,id):
+def go(name, id):
     email = session['email']
     user = User.query.filter_by(email=email).first()
     if email and name != 'profile':
-        tr = Transportation(user=email, sharing_company=name, date=datetime.now())
+        tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
+        sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+        reservation_time = sh.reservation_time
+        seconds = sh.reservation_time.hour*3600 + sh.reservation_time.minute*60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
-        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr)
-        return redirect(url_for('reservation', id=id, name=name))
-    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date))
+        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
+        return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
+    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
     count = 0
     points = 0
     tot = 0
@@ -418,7 +432,9 @@ def go(name,id):
         tot = tot + sh_co.price_per_minute
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
-    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg)
+    id_reservation = ass[0].id
+    name_reservation = ass[0].sharing_company
+    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg, id_reservation=id_reservation, name_reservation=name_reservation)
 
 
 @app.route('/delete', methods=['POST', 'GET'])

@@ -9,7 +9,7 @@
 <h1>Reserve your green mean of transport!</h1>
 
 {% if user.email in request.cookies %}
-    <h2>You have already a reservation active, go to <a href="/profile">your profile</a> page to chek its status.</h2>
+    <h2>You have already a reservation active, click <a href="/go/{{ sh_co }}/{{ id }}">here</a> to chek its status.</h2>
           {% endif %}
 <div class="list-group">
 {% for sc in ord %}
