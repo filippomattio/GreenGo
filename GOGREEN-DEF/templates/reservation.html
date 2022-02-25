@@ -7,10 +7,7 @@
     </head>
 
 
-    <div class="map" align="center">
 
-    {{ sndmap.html }}
-    </div>
 
 
     <div class="container-fluid">
@@ -21,28 +18,19 @@
           <li class="nav-item">
               {{ user.name }} {{ user.family_name }}
           </li>
-          <li class="nav-item">
 
-              Date of birth: {{ user.date_of_birth }}
-
-          </li>
           <li class="nav-item">
 
               Email: {{ user.email}}
 
           </li>
+
+
           <li class="nav-item">
+                <div class="map" align="center">
 
-              Registered on Greengo on: {{ user.get_date_of_registration() }}
-
-          </li>
-          <li class="nav-item">
-
-              Total means taken: {{ count }}
-
-          </li>
-          <li class="nav-item">
-            Total points: {{ points }}
+    {{ sndmap.html }}
+    </div>
           </li>
         </ul>
 
@@ -54,8 +42,17 @@
 
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 {% if user.email in request.cookies %}
-          <p>You have a reservation active, click <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
+          <p>You have a reservation active, click on the button delete, if you want to cancel it, or click on Unlock if you want to unlock your transport <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
+           <form method="post" action="/map/{{ sc.name }}">
+    {{ form.hidden_tag() }}
+
+            {{ form.submit(class='w-100 btn btn-lg btn-primary disabled')}}
+
+      {% if user.email not in request.cookies %}
+            {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
           {% endif %}
+    </form>
+{% endif %}
         <h1 class="h2">Summary</h1>
 
       </div>
