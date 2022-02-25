@@ -3,10 +3,12 @@ from datetime import datetime, date
 from flask import Flask
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+import socket
 from sqlalchemy import desc
 from flask_mail import Message, Mail
 from flask_bcrypt import Bcrypt
 from random import randint, random, uniform
+import geocoder
 
 # upload image
 from flask_uploads import UploadSet
@@ -160,7 +162,11 @@ def mapview(name):
 @app.route("/map", methods=['GET', 'POST'])
 def mapview2():
     # creating a map in the view
-
+    localIp = socket.gethostbyname(socket.gethostname())
+    g = geocoder.ip('me')
+    latlng = g.latlng
+    latUser = latlng[0]
+    lngUser = latlng[1]
     sndmap = Map(
 
         identifier="sndmap",
@@ -169,7 +175,14 @@ def mapview2():
         center_on_user_location=True,
         style="height:900px;width:900px;margin:4;",
         zoom=19,
-        markers=[]
+        markers=[
+               {
+        'icon': 'https://banner2.cleanpng.com/20180605/wo/kisspng-google-maps-google-map-maker-gps-navigation-system-dream-home-5b16489363fc95.2762115415281870274096.jpg',
+        'lat': latUser,
+        'lng': lngUser,
+
+    }
+        ]
     )
     means = Mean.query.all()
     for m in means:
