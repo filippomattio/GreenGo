@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -88,7 +88,10 @@ def create_db():
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):
     resp = make_response(redirect(url_for('reservation', id=id, name=name)))
-    resp.set_cookie(email, 'reserved', max_age=seconds)
+    now = datetime.now()
+    value = now + timedelta(seconds=seconds)
+    value = value.strftime("%Y/%m/%d %H:%M:%S")
+    resp.set_cookie(email, value, max_age=seconds)
     return resp
 
 def getcookie():
@@ -211,6 +214,9 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name,id):
     # creating a map in the view
+    cookie = request.cookies.get(session['email'])
+    if 'email' not in session or not cookie:
+        return redirect(url_for('homepage'))
     id = int(id)
     sndmap = Map(
 
@@ -248,7 +254,12 @@ def reservation(name,id):
             }
     sndmap.markers.append(new_marker)
     username = session.get('username')
-    return render_template('reservation.html', sndmap=sndmap, username=username)
+
+    now = datetime.now()
+    end = datetime.strptime(cookie, "%Y/%m/%d %H:%M:%S")
+    time = (end - now)
+    time = str(time).split(".")[0]
+    return render_template('reservation.html', sndmap=sndmap, username=username, time = time)
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
@@ -318,7 +329,7 @@ def register_page():
                             password=pass_c)
             db.session.add(new_user)
             db.session.commit()
-            send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
+            #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -345,6 +356,11 @@ def confront_price():
     form = ReservateForm()
     if form.validate_on_submit():
         return redirect(url_for('mapview'))
+    if user.email in request.cookies:
+        ass = Transportation.query.filter_by(user=user.email).order_by(desc(Transportation.date)).all()
+        id = ass[0].id
+        sh_co = ass[0].sharing_company
+        return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id)
     return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user)
 
 
@@ -383,9 +399,9 @@ def go(name, id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         reservation_time = sh.reservation_time
-        seconds = sh.reservation_time.hour*3600 + sh.reservation_time.minute*60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
+        seconds = reservation_time.hour * 3600 + reservation_time.minute * 60 + reservation_time.second
         #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
