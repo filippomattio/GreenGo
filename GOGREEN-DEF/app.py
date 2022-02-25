@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time
 from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -88,10 +88,7 @@ def create_db():
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):
     resp = make_response(redirect(url_for('reservation', id=id, name=name)))
-    now = datetime.now()
-    value = now + timedelta(seconds=seconds)
-    value = value.strftime("%Y/%m/%d %H:%M:%S")
-    resp.set_cookie(email, value, max_age=seconds)
+    resp.set_cookie(email, 'reserved', max_age=seconds)
     return resp
 
 def getcookie():
