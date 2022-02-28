@@ -26,6 +26,9 @@ from flask_googlemaps import Map
 # from form import FormContact,Registration,LogForm
 
 app = Flask(__name__)
+app.config['ENV'] = 'development'
+app.config['DEBUG'] = True
+app.config['TESTING'] = True
 
 app.config['GOOGLEMAPS_KEY'] = "AIzaSyDq0H2us352mUJEm1oiTuorwaZCz9ED8gU"
 GoogleMaps(app)
@@ -53,7 +56,8 @@ configure_uploads(app, photos)
 patch_request_class(app)
 
 from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
-from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
+from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm, Delete, \
+    Unlock
 
 """
 @app.before_first_request
@@ -228,7 +232,24 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name,id):
     # creating a map in the view
+
+    user = User.query.filter_by(email=session['email']).first()
     cookie = request.cookies.get(session['email'])
+    form1 = Delete()
+    form2 = Unlock()
+    if form1.validate_on_submit():
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+        request.set_cookie(cookie, expires=0)
+        session['delete'] = 'clear'
+        db.session.delete(tt)
+        return redirect(url_for('pro'))
+    if form2.validate_on_submit():
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+
+        db.session.delete(tt)
+        return redirect(url_for('homepage'))
+
+
     if 'email' not in session or not cookie:
         return redirect(url_for('homepage'))
     id = int(id)
@@ -238,7 +259,7 @@ def reservation(name,id):
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:900px;margin:4;",
+        style="height:400px;width:400px;margin:4;",
         zoom=19,
         markers=[]
     )
@@ -273,7 +294,10 @@ def reservation(name,id):
     end = datetime.strptime(cookie, "%Y/%m/%d %H:%M:%S")
     time = (end - now)
     time = str(time).split(".")[0]
-    return render_template('reservation.html', sndmap=sndmap, username=username, time = time)
+    email=session['email']
+    ass = Transportation.query.filter_by().order_by(desc(Transportation.date)).first
+
+    return render_template('reservation.html', user = user, sndmap=sndmap, username=username, time = time, ass=ass, form1=form1, form2=form2)
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
