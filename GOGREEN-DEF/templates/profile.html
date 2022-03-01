@@ -44,6 +44,10 @@
 {% if user.email in request.cookies %}
           <p>You have a reservation active, click <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
           {% endif %}
+{% if session['delete']=='clear' %}
+          <p>You have deleted your last reservation, {{ name_reservation }}   {{ id_reservation }}</p>
+          {{ session['delete'].clear }}
+          {% endif %}
         <h1 class="h2">Summary</h1>
 
       </div>

@@ -5,6 +5,8 @@ from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from flask_mail import Message, Mail
+import socket
+import geocoder
 from flask_bcrypt import Bcrypt
 from random import randint, random, uniform
 
@@ -24,6 +26,9 @@ from flask_googlemaps import Map
 # from form import FormContact,Registration,LogForm
 
 app = Flask(__name__)
+app.config['ENV'] = 'development'
+app.config['DEBUG'] = True
+app.config['TESTING'] = True
 
 app.config['GOOGLEMAPS_KEY'] = "AIzaSyDq0H2us352mUJEm1oiTuorwaZCz9ED8gU"
 GoogleMaps(app)
@@ -51,7 +56,8 @@ configure_uploads(app, photos)
 patch_request_class(app)
 
 from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
-from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm
+from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm, Delete, \
+    Unlock
 
 """
 @app.before_first_request
@@ -172,6 +178,11 @@ def mapview2():
             age = 99
     else:
         age=99
+    g = geocoder.ipinfo('me')
+    latlng = g.latlng
+    latUser = latlng[0]
+    lngUser = latlng[1]
+
     sndmap = Map(
 
         identifier="sndmap",
@@ -180,7 +191,15 @@ def mapview2():
         center_on_user_location=True,
         style="height:900px;width:100%;margin:4;",
         zoom=19,
-        markers=[]
+
+        markers=[
+          {
+        'icon': 'https://banner2.cleanpng.com/20180605/wo/kisspng-google-maps-google-map-maker-gps-navigation-system-dream-home-5b16489363fc95.2762115415281870274096.jpg',
+        'lat': latUser,
+        'lng': lngUser,
+
+    }
+        ]
     )
     means = Mean.query.all()
     for m in means:
@@ -224,7 +243,24 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name,id):
     # creating a map in the view
+
+    user = User.query.filter_by(email=session['email']).first()
     cookie = request.cookies.get(session['email'])
+    form1 = Delete()
+    form2 = Unlock()
+    if form1.validate_on_submit():
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+        request.set_cookie(cookie, expires=0)
+        session['delete'] = 'clear'
+        db.session.delete(tt)
+        return redirect(url_for('pro'))
+    if form2.validate_on_submit():
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+
+        db.session.delete(tt)
+        return redirect(url_for('homepage'))
+
+
     if 'email' not in session or not cookie:
         return redirect(url_for('homepage'))
     id = int(id)
@@ -234,7 +270,7 @@ def reservation(name,id):
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:100%;margin:4;",
+        style="height:400px;width:400px;margin:4;",
         zoom=19,
         markers=[]
     )
@@ -269,7 +305,10 @@ def reservation(name,id):
     end = datetime.strptime(cookie, "%Y/%m/%d %H:%M:%S")
     time = (end - now)
     time = str(time).split(".")[0]
-    return render_template('reservation.html', sndmap=sndmap, username=username, time = time)
+    email=session['email']
+    ass = Transportation.query.filter_by().order_by(desc(Transportation.date)).first
+
+    return render_template('reservation.html', user = user, sndmap=sndmap, username=username, time = time, ass=ass, form1=form1, form2=form2)
 
 @app.route('/login3', methods=['POST', 'GET'])
 def login_page():
@@ -416,7 +455,7 @@ def go(name, id):
         seconds = sh.reservation_time.hour*3600 + sh.reservation_time.minute*60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
-        #send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
+        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
     ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
     count = 0

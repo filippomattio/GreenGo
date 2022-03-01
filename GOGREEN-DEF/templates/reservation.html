@@ -1,17 +1,84 @@
 {% extends "footers.html" %}
 
 {% block content %}
-
-    <head>
+<head>
     {{sndmap.js}}
     </head>
-<div class="container">
-    <div class="map" align="center">
+    <div class="container-fluid">
+    <div class="row">
+        <div id="sidebarMenu" class="col-md-3">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        {{ user.name }} {{ user.family_name }}
+                    </li>
 
-    {{ sndmap.html }}
+                    <li class="nav-item">
+
+                        Email: {{ user.email}}
+
+                    </li>
+
+  <li class="nav-item">
+
+                      <br>
+                      <br>
+                    </li>
+                    <li class="nav-item">
+
+
+                           <p>{{ sndmap.html }}</p>
+
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+
+        <main class="col-md-9">
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
+                {% if user.email in request.cookies %}
+                    <p>You have a reservation active, click on the button delete, if you want to cancel it, or click on Unlock if you want to unlock your transport </p>
+
+                    <p><form method="post" >
+                        {{ form1.hidden_tag() }}
+
+                     <p>  {{ form1.submit(class='w-100 btn btn-lg btn-primary')}} </p>
+
+      {% if user.email not in request.cookies %}
+            {{ form1.submit(class='w-100 btn btn-lg btn-primary')}}
+          {% endif %}
+    </form></p>
+
+{% endif %}
+              <br>
+
+
+          {% if user.email in request.cookies %}
+
+                 <p>   <form method="post" >
+                        {{ form2.hidden_tag() }}
+
+                      <p> {{ form2.submit(class='w-100 btn btn-lg btn-primary')}}</p>
+
+      {% if user.email not in request.cookies %}
+            {{ form2.submit(class='w-100 btn btn-lg btn-primary')}}
+          {% endif %}
+    </form></p>
+{% endif %}
+
+      </div>
+
+
+
+        </main>
     </div>
-
+<div>
 <p>Residual time to unlock the mean: {{ time }}</p>
 </div>
+    </div>
 
 {% endblock content%}

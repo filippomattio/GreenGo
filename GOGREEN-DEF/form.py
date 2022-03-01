@@ -16,6 +16,16 @@ class ReservateForm(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit = SubmitField('Discover more')
 
+class Delete(FlaskForm):
+    sharing_company = HiddenField("Field 1")
+    submit = SubmitField('CANCEL')
+
+
+class Unlock(FlaskForm):
+    sharing_company = HiddenField("Field 1")
+    submit = SubmitField('UNLOCK')
+
+
 class RegistrationForm(FlaskForm):
     email = StringField('E-Mail:', validators=[DataRequired()])
     name = StringField('Name:', validators=[DataRequired(), Length(min=3, max=20)])
