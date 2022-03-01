@@ -243,17 +243,17 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name,id):
     # creating a map in the view
-
-    user = User.query.filter_by(email=session['email']).first()
+    email = session['email']
+    user = User.query.filter_by(email=email).first()
     cookie = request.cookies.get(session['email'])
     form1 = Delete()
     form2 = Unlock()
     if form1.validate_on_submit():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
-        request.set_cookie(cookie, expires=0)
         session['delete'] = 'clear'
-        db.session.delete(tt)
-        return redirect(url_for('pro'))
+        resp = make_response(redirect(url_for('pro')))
+        resp.set_cookie(email, cookie, max_age=0)
+        return resp
     if form2.validate_on_submit():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
 
@@ -396,7 +396,8 @@ def get_minage():
 
 @app.route('/reserve', methods=['POST', 'GET'])
 def confront_price():
-
+    if 'email' not in session:
+        return redirect(url_for('login_page'))
     user = User.query.filter_by(email=session['email']).first()
     today = date.today()
     age = today.year - user.date_of_birth.year
@@ -444,8 +445,10 @@ def recover_page():
 
 
 @app.route('/go/<string:name>/<string:id>', methods=['POST',
-                                         'GET'])  # tra < > bisogna mettere il nome della shar_comp in modo poi da aggiungere il transport giusto
+                                         'GET'])
 def go(name, id):
+    if 'email' not in session:
+        return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
     if email and name != 'profile':
@@ -469,10 +472,19 @@ def go(name, id):
         points = points + sh_co.points
         count = count + 1
         tot = tot + sh_co.price_per_minute
-    if count > 0:
-        avg = float("{:.2f}".format(tot / count))
     id_reservation = ass[0].id
     name_reservation = ass[0].sharing_company
+    to_delete = ass[0]
+    if 'delete' in session:
+        db.session.delete(ass[0])
+        db.session.commit()
+        ass.remove(to_delete)
+        count = count -1
+        sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
+        tot = tot - sh_co.price_per_minute
+        points = points - sh_co.points
+        if count > 0:
+            avg = float("{:.2f}".format(tot / count))
     return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg, id_reservation=id_reservation, name_reservation=name_reservation)
 
 
