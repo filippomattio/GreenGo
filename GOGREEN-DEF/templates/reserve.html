@@ -2,12 +2,14 @@
 
 
 {% block content %}
-
+<div class="container">
 
 
 {% if tot>0 %}
 <h1>Reserve your green mean of transport!</h1>
-
+<p>Below are listed the means of transport you can drive in order of price.</p>
+    <p>If you click on the button 'Discover more', you will be redirect to a map containing only the mean you choose here.</p>
+    <p>If you prefer a map with all the means, please click <a href="/map">here</a>. </p>
 {% if user.email in request.cookies %}
     <h2>You have already a reservation active, click <a href="/go/{{ sh_co }}/{{ id }}">here</a> to chek its status.</h2>
           {% endif %}
@@ -28,10 +30,10 @@
       <form method="post" action="/map/{{ sc.name }}">
     {{ form.hidden_tag() }}
             {% if user.email in request.cookies %}
-            {{ form.submit(class='w-100 btn btn-lg btn-primary disabled')}}
+            {{ form.submit(class='btn btn-primary disabled')}}
           {% endif %}
       {% if user.email not in request.cookies %}
-            {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
+            {{ form.submit(class='btn btn-primary')}}
           {% endif %}
     </form>
           </div>
@@ -49,18 +51,9 @@
 
 
 
-<div class="col-md-6">
 
 
-
-
-
-    <--! qui si dovrebbe mettere la mappa-->
-    
-   </div>
-
-
-
+</div>
 
 {% endblock content %}
 

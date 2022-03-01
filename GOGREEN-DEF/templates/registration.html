@@ -1,7 +1,7 @@
 {% extends "footers.html" %}
 
 {% block content %}
-
+<div class="container">
     <form class="row g-3" method="post">
     {{ form.hidden_tag() }}
   <div class="col-md-6">
@@ -27,7 +27,7 @@
   {% with messages = get_flashed_messages(category_filter=["errorEmail"]) %}
    {% if messages %}
 
-         <div class="alert-danger">{{ messages[1] }}</div>
+         <div class="alert-danger">{{ messages[0] }}</div>
 
    {% endif %}
 {% endwith %}
@@ -63,5 +63,5 @@
       <p>Have you registered yet? Click <a href="/login3">here</a> to login</p>
   </div>
 </form>
-
+</div>
 {% endblock content %}

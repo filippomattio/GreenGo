@@ -1,7 +1,157 @@
-{% extends 'index.html' %}
+{% extends 'footers.html' %}
 {% block content %}
-<p>Welcome to GreenGo, the green site of renting means of transport!</p>
+
+      <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <img src="static/turin.jpg" width="100%" height="100%"/>
+        </svg>
+
+        <div class="container">
+          <div class="carousel-caption text-start">
+              <h1>Welcome to GreenGo!</h1>
+            <p>The green website of renting means of transport placed in Turin</p>
+            <p><a class="btn btn-lg btn-primary" href="/registration">Sign up today</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <img src="static/greengo.jpeg" width="100%" height="100%"/>
+        </svg>
+
+        <div class="container">
+          <div class="carousel-caption">
+            <h1>Welcome to GreenGo!</h1>
+            <p>The green website of renting means of transport placed in Turin</p>
+            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
+
+        <div class="container">
+          <div class="carousel-caption text-end">
+            <h1>One more for good measure.</h1>
+            <p>Some representative placeholder content for the third slide of this carousel.</p>
+            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+
+  <!-- Marketing messaging and featurettes
+  ================================================== -->
+  <!-- Wrap the rest of the page in another container to center all the content. -->
+
+  <div class="container marketing">
+
+    <!-- Three columns of text below the carousel -->
+    <div class="row">
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
+        <image href="/static/user.png" height="140" width="140"/>
+        </svg>
+        <h2>Register now</h2>
+        <p>Enjoy now Greengo, the green app of means of transport!</p>
+        <p><a class="btn btn-secondary" href="/registration">Sign up &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
+        <image href="/static/electric-car.png" height="140" width="140"/>
+        </svg>
+
+        <h2>Reserve a mean</h2>
+        <p>Are you looking for a cheap mean of transport? Click here to choose the one you like more!</p>
+        <p><a class="btn btn-secondary" href="/reserve">Reserve &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
+        <image href="/static/map.png" height="140" width="140"/>
+        </svg>
+
+        <h2>Map</h2>
+        <p>Give a look to the means near to you.</p>
+        <p><a class="btn btn-secondary" href="/map">Map &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+    </div><!-- /.row -->
+
+
+    <!-- START THE FEATURETTES -->
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading">Are you a sharing company? </h2>
+        <p class="lead"><a href="mailto:greengo2022@email.com">Contact us</a> to create a partnership with us!</p>
+      </div>
+      <div class="col-md-5">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="400" height="400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Partnership</title>
+        <image href="/static/partnership.jpg" height="100%" width="100%"/>
+        </svg>
+
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading">Increase your score!</h2>
+        <p class="lead">Reserve a green mean of transport to increase your pointage and earn coupons.</p>
+      </div>
+      <div class="col-md-5 order-md-1">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
+        <image href="/static/env.png" height="100%" width="100%"/>
+        </svg>
+
+      </div>
+    </div>
     {% if count>0 %}
-    <p>Average rating: {{ rating }} out of 5 ({{ count }} ratings)</p>
-    {% endif %}
+
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading">GreenGo rating </h2>
+        <p class="lead">We care about your opinion!</p>
+          <p class="lead">Please give us a <a href="/feedback">feedback</a>!</p>
+      </div>
+      <div class="col-md-5">
+        <div class="d-flex justify-content-center">
+    <div class="content text-center">
+        <div class="ratings"> <span class="product-rating">{{ rating }}</span><span>/5</span>
+            <div class="stars">
+            {% for c in range(0,avg_int) %}
+             <i class="fa fa-star"></i>
+            {% endfor %}
+            </div>
+            <div class="rating-text"> <span>{{ count }} ratings </span> </div>
+        </div>
+    </div>
+</div>
+
+      </div>
+    </div>
+  {% endif %}
+  </div>
 {% endblock content %}

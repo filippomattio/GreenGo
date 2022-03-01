@@ -1,11 +1,11 @@
 {% extends "footers.html" %}
 
 {% block content %}
-
+<div class="container">
   <form class="form-signin" method="post">
   {{ form.hidden_tag() }}
-    <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Please Login</h1>
+    <img class="col-12 mb-4" src="static/greengo.jpeg" alt="" width="72" height="57"/>
+    <h1 class="h2 mb-3 fw-normal text-center">Login</h1>
 
     <div class="form-floating">
        {{ form.email(class='form-control', placeholder='Email address') }}
@@ -32,19 +32,16 @@
    {% endif %}
 {% endwith %}
     </div>
-    <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
-    </div>
+
       {{ form.submit(class='w-100 btn btn-lg btn-primary')}}
   {% for error in form.submit.errors %}
       <div class="alert-danger">{{ error }}</div>
     {% endfor %}
-  <p></p><p class="text-center">Have you not registered yet?<br> Click <a href="/registration">here</a> to register</p>
+   </form>
+  <p></p>
+    <p class="text-center">Have you not registered yet?<br> Click <a href="/registration">here</a> to register</p>
    <p></p><p class="text-center">Have you forgotten your password?<br> Click <a href="/recover">here</a> to recover it</p>
 
-  </form>
-
+</div>
 {% endblock content %}
 

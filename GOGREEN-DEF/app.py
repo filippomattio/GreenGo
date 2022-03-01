@@ -94,9 +94,6 @@ def setcookie(name, id, email, seconds):
     resp.set_cookie(email, value, max_age=seconds)
     return resp
 
-def getcookie():
-    reserved = request.cookies.get('reserved')
-    return reserved
 
 @app.route('/')
 def homepage():
@@ -110,20 +107,21 @@ def homepage():
         count = count + 1
     if count > 0:
         avg = float("{:.2f}".format(float(rating) / float(count)))
-    return render_template("home.html", username=username, rating=avg, count=count)
+    avg_int = int(avg)
+    return render_template("home.html", username=username, rating=avg, count=count, avg_int=avg_int)
 
 
 @app.route("/map/<string:name>", methods=['GET', 'POST'])
 def mapview(name):
     # creating a map in the view
-
+    #bisogna evitare che uno schiacci reserve now se ha gia prenotato un mezzo!!!
     sndmap = Map(
 
         identifier="sndmap",
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:900px;margin:4;",
+        style="height:900px;width:100%;margin:4;",
         zoom=19,
         markers=[]
     )
@@ -162,20 +160,32 @@ def mapview(name):
 @app.route("/map", methods=['GET', 'POST'])
 def mapview2():
     # creating a map in the view
-
+    if 'email' in session:
+        user = User.query.filter_by(email=session['email']).first()
+        if user:
+            today = date.today()
+            age = today.year - user.date_of_birth.year
+            if today.month < user.date_of_birth.month or (
+                    today.month == user.date_of_birth.month and today.day < user.date_of_birth.day):
+                age -= 1
+        else:
+            age = 99
+    else:
+        age=99
     sndmap = Map(
 
         identifier="sndmap",
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:900px;margin:4;",
+        style="height:900px;width:100%;margin:4;",
         zoom=19,
         markers=[]
     )
     means = Mean.query.all()
     for m in means:
-        if m.sharing_company=='Dot':
+        sh_co = SharingCompany.query.filter_by(name=m.sharing_company).first()
+        if m.sharing_company=='Dot' and sh_co.min_age<=age:
             new_marker = {
              'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/monoicon.png',
             'lat': m.lat,
@@ -188,7 +198,7 @@ def mapview2():
                        "<br>"
                        "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
         }
-        if m.sharing_company == 'Enjoy':
+        if m.sharing_company == 'Enjoy' and sh_co.min_age<=age:
             new_marker = {
                 'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/car.png',
                 'lat': m.lat,
@@ -224,7 +234,7 @@ def reservation(name,id):
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:900px;margin:4;",
+        style="height:900px;width:100%;margin:4;",
         zoom=19,
         markers=[]
     )
@@ -327,9 +337,13 @@ def register_page():
                             family_name=form.family_name.data,
                             date_of_birth=form.date_of_birth.data,
                             password=pass_c)
+            try:
+                send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
+            except:
+                flash("Email not valid. Please retry with a new one.", 'errorEmail')
+                return render_template('registration.html', form=form)
             db.session.add(new_user)
             db.session.commit()
-            #send_mail(form.email.data, "New registration", "mail", user=new_user, password=form.password.data)
             session['email'] = form.email.data
             return redirect(url_for('confront_price'))
     return render_template('registration.html', form=form)
@@ -448,7 +462,7 @@ def give_feedback():
     user = User.query.filter_by(email=email).first()
     if email:
         if form.validate_on_submit():
-            rating = Rating(user=email, rank=form.rank.data, reason=form.reason.data)
+            rating = Rating(user=email, rank=form.rank.data, date = datetime.now(), reason=form.reason.data)
             db.session.add(rating)
             db.session.commit()
             return redirect(url_for('homepage'))
