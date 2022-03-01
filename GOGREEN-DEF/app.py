@@ -50,15 +50,16 @@ db = SQLAlchemy(app, session_options={"autoflush": False})
 mail = Mail(app)
 bcrypt = Bcrypt(app)
 
+
 # UPLOAD Then define Upload format and file size.
 photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiare IMAGES e mettere la size
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean
+from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean, Flag
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm, Delete, \
     Unlock
-
+flag = Flag()
 """
 @app.before_first_request
 def create_db():
@@ -251,6 +252,7 @@ def reservation(name,id):
     if form1.validate_on_submit():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
         session['delete'] = 'clear'
+        flag.SetFlag(True)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
         return resp
@@ -451,6 +453,7 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
+
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
@@ -466,26 +469,33 @@ def go(name, id):
     tot = 0
     avg = 0
     dict = {}
-    for tr in ass:
-        sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
-        dict[tr.date] = sh_co
-        points = points + sh_co.points
-        count = count + 1
-        tot = tot + sh_co.price_per_minute
-    id_reservation = ass[0].id
-    name_reservation = ass[0].sharing_company
-    to_delete = ass[0]
-    if 'delete' in session:
+    if len(ass) >0:
+        for tr in ass:
+             sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+             dict[tr.date] = sh_co
+             points = points + sh_co.points
+             count = count + 1
+             tot = tot + sh_co.price_per_minute
+        id_reservation = ass[0].id
+        name_reservation = ass[0].sharing_company
+        to_delete = ass[0]
+    else:
+        id_reservation = ''
+        name_reservation = ""
+    if 'delete' in session and flag.getFlag()==False:
+        session['delete']=''
+    if 'delete' in session and flag.getFlag()==True:
+        flag.SetFlag(False)
         db.session.delete(ass[0])
         db.session.commit()
         ass.remove(to_delete)
-        count = count -1
+        count = count - 1
         sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
         tot = tot - sh_co.price_per_minute
         points = points - sh_co.points
         if count > 0:
             avg = float("{:.2f}".format(tot / count))
-    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg, id_reservation=id_reservation, name_reservation=name_reservation)
+    return render_template('profile.html' , list=ass, user=user, dict=dict, count=count, points=points, avg=avg, id_reservation=id_reservation, name_reservation=name_reservation, session2=True)
 
 
 @app.route('/delete', methods=['POST', 'GET'])
@@ -493,6 +503,7 @@ def delete():
     email = session['email']
     form = DeleteForm()
     user = User.query.filter_by(email=email).first()
+
     if user:
         if form.validate_on_submit():
             ff = FinalFeedback(user=email, motivation=form.motivation.data, other=form.other.data)

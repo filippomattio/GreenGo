@@ -3,6 +3,19 @@ from datetime import datetime
 from app import db
 
 
+
+class Flag():
+    flag=False
+
+    def getFlag(self):
+        return self.flag
+
+    def SetFlag(self, bool):
+        if bool==True:
+            self.flag=True
+        else:
+            self.flag = False
+
 class User(db.Model):
     __tablename__ = "users"
     email = db.Column(db.String(100), primary_key=True)
