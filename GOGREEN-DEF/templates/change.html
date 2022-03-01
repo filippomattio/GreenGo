@@ -1,11 +1,11 @@
 {% extends "footers.html" %}
 {% block content %}
-<div class="container">
-<h1>Change your password</h1>
+<div class="container px-4 py-5" id="featured-3"">
+<h2 class="pb-2 border-bottom">Change your password</h2>
 
     <form class="row g-3" method="post">
     {{ form.hidden_tag() }}
-    <div class="row">
+    <div class="row py-3">
         <div class="col-6 col-md-4">
     <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
         </div>
@@ -13,12 +13,12 @@
       <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ session['email'] }}">
     </div>
     </div>
-    <div class="row">
+    <div class="row py-3">
     <div class="col-6 col-md-4">
     <label for= '{{ form.old_password.label }}' class="form-label">{{ form.old_password.label }}</label>
     </div>
     <div class="col-6 col-md-4">
-    {{ form.old_password(class='form-control', placeholder='Please enter here your old password') }}
+    {{ form.old_password(class='form-control', placeholder='Old password') }}
       {% for error in form.old_password.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
@@ -31,12 +31,12 @@
 {% endwith %}
   </div>
     </div>
-        <div class="row">
+        <div class="row py-3">
         <div class="col-6 col-md-4">
     <label for= '{{ form.new_password.label }}' class="form-label">{{ form.new_password.label }}</label>
         </div>
         <div class="col-6 col-md-4">
-    {{ form.new_password(class='form-control', placeholder='Please enter here your new password') }}
+    {{ form.new_password(class='form-control', placeholder='New password') }}
       {% for error in form.new_password.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
@@ -49,7 +49,7 @@
 {% endwith %}
         </div>
   </div>
-    <div class="col-12">
+    <div class="col-12 py-3">
     <div>
         {{ form.submit(class='btn btn-primary') }}
     </div>
