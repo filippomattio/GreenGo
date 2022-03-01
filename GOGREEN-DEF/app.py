@@ -466,15 +466,18 @@ def go(name, id):
     tot = 0
     avg = 0
     dict = {}
+    id_reservation = 0
+    name_reservation = ""
     for tr in ass:
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         dict[tr.date] = sh_co
         points = points + sh_co.points
         count = count + 1
         tot = tot + sh_co.price_per_minute
-    id_reservation = ass[0].id
-    name_reservation = ass[0].sharing_company
-    to_delete = ass[0]
+    if len(ass)>0:
+        id_reservation = ass[0].id
+        name_reservation = ass[0].sharing_company
+        to_delete = ass[0]
     if 'delete' in session:
         db.session.delete(ass[0])
         db.session.commit()
