@@ -25,12 +25,20 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     date_of_registration = db.Column(db.DateTime, default=datetime.now())
     transportations = db.relationship("Transportation", backref="user_tr")
+    points = db.Column(db.Integer)
+
 
     def get_date_of_registration(self):
         return self.date_of_registration.strftime("%Y-%m-%d")
 
     def get_password(self):
         return self.password
+
+class Prize(db.Model):
+        __tablename__ = "prize"
+        name = db.Column(db.String(100), primary_key=True)
+        company = db.Column(db.String(100),primary_key=True, nullable=False)
+        points = db.Column(db.Integer)
 
 class Mean(db.Model):
     __tablename__ = "means"

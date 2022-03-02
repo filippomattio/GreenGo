@@ -55,7 +55,7 @@
       </div>
         <p>Hi {{ user.name }}, thanks for being an active user!</p>
           {% if count>0 %}
-          <p>Up to now, you have accumulated a total of {{ points }} points in {{ count }} travel{% if count>1 %}s{% endif %}!</p>
+          <p>Up to now, you have a total of {{ points }} points{% if count>1 %}s{% endif %}!</p>
               <p>You have spent on average {{ avg }} $ per minute.</p>
               <p>Please, <a href="/feedback">click here</a> to give us a feedback!</p>
               <p>See below your travels' records</p>

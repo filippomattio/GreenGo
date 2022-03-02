@@ -55,7 +55,7 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean, Flag
+from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean, Flag, Prize
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm, Delete, \
     Unlock, SelectMean
 
@@ -479,6 +479,32 @@ def confront_price():
     return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, form2=form2, flag=flag)
 
 
+@app.route('/prize', methods=['POST', 'GET'])
+def prize():
+    if 'email' not in session:
+        return redirect(url_for('login_page'))
+    user = User.query.filter_by(email=session['email']).first()
+    if user.points==None:
+        user.points=0
+    form = ReservateForm()
+    flag = True
+    ord = Prize.query.filter_by().order_by(desc(Prize.points)).all()
+    if len(ord)==0:
+        flag=False
+    return render_template('prize.html', ord=ord,  form=form, user=user, flag=flag)
+
+@app.route('/prize/<string:name>/<string:company>', methods=['POST', 'GET'])
+def prize2(name,company):
+    if 'email' not in session:
+        return redirect(url_for('login_page'))
+    user = User.query.filter_by(email=session['email']).first()
+    form = ReservateForm()
+    flag = True
+    ord = Prize.query.filter_by(company=company, name=name).order_by(desc(Prize.points)).first()
+    user.points=user.points-ord.points
+
+    return redirect(url_for('homepage'))
+
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
     return render_template('settings.html')
@@ -512,6 +538,8 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
+    if user.points == None:
+        user.points=0
     if user.email in request.cookies and name!='profile':
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
         the_tr = tot_tr[0]
@@ -520,6 +548,8 @@ def go(name, id):
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+
+        user.points = user.points + sh.points
         reservation_time = sh.reservation_time
         seconds = sh.reservation_time.hour * 3600 + sh.reservation_time.minute * 60 + sh.reservation_time.second
         db.session.add(tr)
@@ -556,10 +586,11 @@ def go(name, id):
         count = count - 1
         sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
         tot = tot - sh_co.price_per_minute
-        points = points - sh_co.points
+        user.points = user.points-sh_co.points
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
-    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg,
+
+    return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=user.points, avg=avg,
                            id_reservation=id_reservation, name_reservation=name_reservation, session2=True)
 
 

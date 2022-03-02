@@ -1,0 +1,59 @@
+{% extends 'footers.html' %}
+{% block content %}
+
+    <div class="container px-4 py-5">
+
+
+
+<h2 class="pb-2 border-bottom">Use the {{ user.points }} points you have accumulated!</h2>
+<p>Below are listed the means of price tou can access with your GreenPoints!</p>
+<h2>Thank you for your GreenChoice!</h2>
+
+ {% if flag==True %}
+<div class="list-group">
+{% for sc in ord %}
+    <div class="row">
+    <div class="col-6 col-md-10">
+
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{ sc.name }}</h5>
+      <small>{{ sc.name}}</small>
+    </div>
+    <p class="mb-1">Company: {{ sc.company }}</p>
+    <small>A total of {{ sc.points }} points</small>
+  </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <form method="post" action="/prize/{{ sc.name }}/{{ sc.company }}">
+    {{ form.hidden_tag() }}
+            {% if user.points < sc.points %}
+          {{ form.submit(class='btn btn-primary disabled')}}
+
+    {% endif %}
+        {% if user.points>=sc.points %}
+          {{ form.submit(class='btn btn-primary')}}
+
+    {% endif %}
+
+
+    </form>
+          </div>
+    </div>
+
+
+{% endfor %}
+</div>
+{% endif %}
+
+
+    {% if flag==False %}
+      <h2 class="pb-2 border-bottom">You have not enough points!</h2>
+<p>Move on and take some green transport!</p>
+
+    {% endif %}
+
+
+
+    </div>
+
+{% endblock %}
