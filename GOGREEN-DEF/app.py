@@ -183,6 +183,7 @@ def mapview2():
     # creating a map in the view
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
+        name = user.name
         if user:
             today = date.today()
             age = today.year - user.date_of_birth.year
@@ -193,6 +194,7 @@ def mapview2():
             age = 99
     else:
         age = 99
+        name = "new user"
     g = geocoder.ipinfo('me')
     latlng = g.latlng
     latUser = latlng[0]
@@ -226,7 +228,7 @@ def mapview2():
                 'lng': m.lng,
                 'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
                            "<br>"
-                           "<form action='/go/Dot/" + str(m.id) + "'>"
+                           "<form action='/go/"+str(m.sharing_company)+"/" + str(m.id) + "'>"
                                                                   "<input type='submit' class='btn btn-primary' value='Reserve now'>"
                                                                   " </form>"
                                                                   "<br>"
@@ -239,7 +241,7 @@ def mapview2():
                 'lng': m.lng,
                 'infobox': "<div  ><a class='link_mono' href='https://enjoy.eni.com/it'>Enjoy</a></div>"
                            "<br>"
-                           "<form action='/go/Enjoy/" + str(m.id) + "'>"
+                           "<form action='/go/"+str(m.sharing_company)+"/" + str(m.id) + "'>"
                                                                     "<input type='submit' class='btn btn-primary' value='Reserve now'>"
                                                                     " </form>"
                                                                     "<br>"
@@ -247,7 +249,7 @@ def mapview2():
             }
         sndmap.markers.append(new_marker)
     username = session.get('username')
-    return render_template('map.html', sndmap=sndmap, username=username)
+    return render_template('map.html', sndmap=sndmap, username=name)
 
 
 def send_mail(to, subject, template, **kwargs):  # to is could be a list
@@ -510,6 +512,10 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
+    if user.email in request.cookies and name!='profile':
+        tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
+        the_tr = tot_tr[0]
+        return redirect(url_for('reservation', name=the_tr.sharing_company, id=the_tr.id))
 
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
