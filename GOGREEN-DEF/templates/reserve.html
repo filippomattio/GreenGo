@@ -5,7 +5,7 @@
 <div class="container">
 
 
-{% if tot>0 %}
+
 <h1>Reserve your green mean of transport!</h1>
 <p>Below are listed the means of transport you can drive in order of price.</p>
     <p>If you click on the button 'Discover more', you will be redirect to a map containing only the mean you choose here.</p>
@@ -23,6 +23,8 @@
 
     </form>
 </h1>
+
+    {% if flag==True %}
 <div class="list-group">
 {% for sc in ord %}
     <div class="row">
@@ -53,13 +55,19 @@
 {% endfor %}
 </div>
 {% endif %}
-    {% if tot==0 %}
+    {% if tot==0 and flag== True%}
     <h1>We are sorry, you are too young to reserve a mean of transport!</h1>
         <p>Now, minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
         <p>Please contact use for any further information.</p>
 {% endif %}
+{% if flag==False %}
 
 
+ <h1>We are sorry, we do not have this category of means of transport available at the moment</h1>
+
+        <p>Please contact use for any further information.</p>
+
+{% endif %}
 
 
 

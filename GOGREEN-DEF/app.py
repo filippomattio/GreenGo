@@ -434,10 +434,19 @@ def confront_price():
             today.month == user.date_of_birth.month and today.day < user.date_of_birth.day):
         age -= 1
     form2 = SelectMean()
+    flag = True
+
+
     if form2.validate_on_submit():
-        ord = SharingCompany.query.filter(SharingCompany.min_age <= age,
+        if len(SharingCompany.query.filter(SharingCompany.min_age <= age,
+                                           SharingCompany.type_vehicle == form2.select.data).all()) == 0:
+            flag = False
+        if flag:
+            ord = SharingCompany.query.filter(SharingCompany.min_age <= age,
                                           SharingCompany.type_vehicle == form2.select.data).order_by(
-            SharingCompany.price_per_minute).all()
+                SharingCompany.price_per_minute).all()
+        else:
+            ord=[]
 
 
     else:
@@ -452,11 +461,11 @@ def confront_price():
         id = ass[0].id
         sh_co = ass[0].sharing_company
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id,
-                               form2=form2)
+                               form2=form2, flag=flag)
     if form2.submit2.data and form2.validate():
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user,
-                               form2=form2)
-    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, form2=form2)
+                               form2=form2, flag=flag)
+    return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, form2=form2, flag=flag)
 
 
 @app.route('/settings', methods=['POST', 'GET'])
