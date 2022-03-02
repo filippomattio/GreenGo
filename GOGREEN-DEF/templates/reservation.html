@@ -46,7 +46,7 @@
                     <p><form method="post" >
                         {{ form1.hidden_tag() }}
 
-                     <p>  {{ form1.submit(class='w-100 btn btn-lg btn-primary')}} </p>
+                     <p>  {{ form1.submit1(class='w-100 btn btn-lg btn-primary')}} </p>
 
       {% if user.email not in request.cookies %}
             {{ form1.submit(class='w-100 btn btn-lg btn-primary')}}
@@ -62,7 +62,7 @@
                  <p>   <form method="post" >
                         {{ form2.hidden_tag() }}
 
-                      <p> {{ form2.submit(class='w-100 btn btn-lg btn-primary')}}</p>
+                      <p> {{ form2.submit2(class='w-100 btn btn-lg btn-primary')}}</p>
 
       {% if user.email not in request.cookies %}
             {{ form2.submit(class='w-100 btn btn-lg btn-primary')}}

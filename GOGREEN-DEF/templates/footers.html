@@ -59,7 +59,10 @@
             <a class="nav-link {% if 'email' in session %}disabled{% endif %}" href="/login3">Login</a>
           </li>
          <li class="nav-item">
-            <a class="nav-link" href="/map">Mappa</a>
+            <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/reserve">Reservation</a>
+          </li>
+         <li class="nav-item">
+            <a class="nav-link" href="/map">Map</a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% if 'email' in session %}disabled{% endif %}" href="/registration">Registration</a>

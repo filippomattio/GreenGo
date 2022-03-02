@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="container px-4 py-5">
+<div class="container">
 
 
 {% if tot>0 %}
@@ -13,6 +13,18 @@
 {% if user.email in request.cookies %}
     <h2>You have already a reservation active, click <a href="/go/{{ sh_co }}/{{ id }}">here</a> to chek its status.</h2>
           {% endif %}
+
+<h1>
+ <form method="post" >
+            {{ form2.hidden_tag() }}
+            {{ form2.select()}}
+
+            {{ form2.submit2()}}
+
+    </form>
+</h1>
+
+    {% if flag==True %}
 <div class="list-group">
 {% for sc in ord %}
     <div class="row">
@@ -43,13 +55,19 @@
 {% endfor %}
 </div>
 {% endif %}
-    {% if tot==0 %}
+    {% if tot==0 and flag== True%}
     <h2 class="pb-2 border-bottom">We are sorry, you are too young to reserve a mean of transport!</h2>
         <p>Minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
         <p>Please <a href="mailto:greengo2022@email.com">contact us</a> for any further information.</p>
 {% endif %}
+{% if flag==False %}
 
 
+ <h2 class="pb-2 border-bottom">We are sorry, we do not have this category of means of transport available at the moment</h2>
+
+    <p>Please <a href="mailto:greengo2022@email.com">contact us</a> for any further information.</p>
+
+{% endif %}
 
 
 
