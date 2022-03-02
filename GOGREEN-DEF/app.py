@@ -274,8 +274,8 @@ def reservation(name, id):
         return resp
     if form2.submit2.data and form2.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
-        session['delete'] = 'clear'
-        flag.SetFlag(True)
+
+        flag.SetFlag(False)
         resp = make_response(redirect(url_for('homepage')))
         resp.set_cookie(email, cookie, max_age=0)
 
