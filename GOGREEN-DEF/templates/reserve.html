@@ -56,6 +56,7 @@
 {% endfor %}
 </div>
 {% endif %}
+    {% endif %}
     {% if tot==0 and flag== True%}
     <h2 class="pb-2 border-bottom">We are sorry, you are too young to reserve a mean of transport!</h2>
         <p>Minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
@@ -73,7 +74,7 @@
 
 
 
-{% endif %}
+
     </div>
 {% endblock content %}
 
