@@ -18,12 +18,12 @@ class ReservateForm(FlaskForm):
 
 class Delete(FlaskForm):
     sharing_company = HiddenField("Field 1")
-    submit = SubmitField('CANCEL')
+    submit1 = SubmitField('CANCEL')
 
 
 class Unlock(FlaskForm):
     sharing_company = HiddenField("Field 1")
-    submit = SubmitField('UNLOCK')
+    submit2 = SubmitField('UNLOCK')
 
 class SelectMean(FlaskForm):
     select = SelectField('Transport', choices=[('all'),('bike'),('car'),('moto'),('scooter')])

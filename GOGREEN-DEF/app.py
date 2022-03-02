@@ -265,18 +265,21 @@ def reservation(name, id):
     cookie = request.cookies.get(session['email'])
     form1 = Delete()
     form2 = Unlock()
-    if form1.validate_on_submit():
+    if form1.submit1.data and form1.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
         session['delete'] = 'clear'
         flag.SetFlag(True)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
         return resp
-    if form2.validate_on_submit():
+    if form2.submit2.data and form2.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+        session['delete'] = 'clear'
+        flag.SetFlag(True)
+        resp = make_response(redirect(url_for('homepage')))
+        resp.set_cookie(email, cookie, max_age=0)
 
-        db.session.delete(tt)
-        return redirect(url_for('homepage'))
+        return resp
 
     if 'email' not in session or not cookie:
         return redirect(url_for('homepage'))
