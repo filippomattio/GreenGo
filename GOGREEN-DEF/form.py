@@ -25,6 +25,9 @@ class Unlock(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit = SubmitField('UNLOCK')
 
+class SelectMean(FlaskForm):
+    select = SelectField('Transport', choices=[('bike'),('car'),('moto'),('scooter')])
+    submit2 = SubmitField('Filter')
 
 class RegistrationForm(FlaskForm):
     email = StringField('E-Mail:', validators=[DataRequired()])
