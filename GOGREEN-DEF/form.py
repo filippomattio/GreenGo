@@ -26,7 +26,7 @@ class Unlock(FlaskForm):
     submit = SubmitField('UNLOCK')
 
 class SelectMean(FlaskForm):
-    select = SelectField('Transport', choices=[('bike'),('car'),('moto'),('scooter')])
+    select = SelectField('Transport', choices=[('all'),('bike'),('car'),('moto'),('scooter')])
     submit2 = SubmitField('Filter')
 
 class RegistrationForm(FlaskForm):

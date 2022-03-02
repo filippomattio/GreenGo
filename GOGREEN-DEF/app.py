@@ -435,17 +435,23 @@ def confront_price():
         age -= 1
     form2 = SelectMean()
     flag = True
+    flagAll=True
 
+    if form2.submit2.data and form2.validate():
+        if form2.select.data == 'all':
+            flagAll=False
+            ord = SharingCompany.query.filter(SharingCompany.min_age <= age
+                                             ).order_by(
+                SharingCompany.price_per_minute).all()
 
-    if form2.validate_on_submit():
-        if len(SharingCompany.query.filter(SharingCompany.min_age <= age,
+        if flagAll==True and len(SharingCompany.query.filter(SharingCompany.min_age <= age,
                                            SharingCompany.type_vehicle == form2.select.data).all()) == 0:
             flag = False
-        if flag:
+        if flag and flagAll==True:
             ord = SharingCompany.query.filter(SharingCompany.min_age <= age,
                                           SharingCompany.type_vehicle == form2.select.data).order_by(
                 SharingCompany.price_per_minute).all()
-        else:
+        if flag==False and flagAll==True:
             ord=[]
 
 
