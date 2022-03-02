@@ -1,28 +1,29 @@
 {% extends "footers.html" %}
 {% block content %}
-<div class="container">
-    <h1>Hi {{ user.name }}, why do you want to delete your account?</h1>
+<div class="container px-4 py-5">
+    <h2 class="pb-2 border-bottom">Hi {{ user.name }}, why do you want to delete your account?</h2>
 
-        <form class="row g-3" method="post">
+        <form method="post">
     {{ form.hidden_tag() }}
-
+    <div class="row">
   <div class="col-md-8">
-    <label for= '{{ form.motivation.label }}' class="form-label">{{ form.motivation.label }}</label>
-    {{ form.motivation(class='form-control') }}
+    <label for= '{{ form.motivation.label }}' class="h5">{{ form.motivation.label }}</label>
+    {{ form.motivation}}
       {% for error in form.motivation.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
   </div>
-
+</div>
+        <div class="row">
   <div class="col-md-8">
-    <label for= '{{ form.other.label }}' class="form-label">{{ form.other.label }}</label>
-    {{ form.other(class='form-control') }}
+    <label for= '{{ form.other.label }}' class="h5">{{ form.other.label }}</label>
+    {{ form.other(class="form-control") }}
       {% for error in form.other.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
 
   </div>
-
+        </div>
   <div class="col-12">
     <div>
         {{ form.submit(class='btn btn-primary') }}

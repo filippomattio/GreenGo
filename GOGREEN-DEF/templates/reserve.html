@@ -2,11 +2,11 @@
 
 
 {% block content %}
-<div class="container">
+<div class="container px-4 py-5">
 
 
 {% if tot>0 %}
-<h1>Reserve your green mean of transport!</h1>
+<h2 class="pb-2 border-bottom">Reserve your green mean of transport!</h2>
 <p>Below are listed the means of transport you can drive in order of price.</p>
     <p>If you click on the button 'Discover more', you will be redirect to a map containing only the mean you choose here.</p>
     <p>If you prefer a map with all the means, please click <a href="/map">here</a>. </p>
@@ -44,9 +44,9 @@
 </div>
 {% endif %}
     {% if tot==0 %}
-    <h1>We are sorry, you are too young to reserve a mean of transport!</h1>
-        <p>Now, minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
-        <p>Please contact use for any further information.</p>
+    <h2 class="pb-2 border-bottom">We are sorry, you are too young to reserve a mean of transport!</h2>
+        <p>Minimum age to drive a mean of transport enrolled at Greengo is {{ min }} years old.</p>
+        <p>Please <a href="mailto:greengo2022@email.com">contact us</a> for any further information.</p>
 {% endif %}
 
 
