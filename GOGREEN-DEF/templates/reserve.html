@@ -11,7 +11,7 @@
     <p>If you click on the button 'Discover more', you will be redirect to a map containing only the mean you choose here.</p>
     <p>If you prefer a map with all the means, please click <a href="/map">here</a>. </p>
 {% if user.email in request.cookies %}
-    <h2>You have already a reservation active, click <a href="/go/{{ sh_co }}/{{ id }}">here</a> to chek its status.</h2>
+    <h2>You have already a reservation active, click <a href="/reservation/{{ sh_co }}/{{ id }}">here</a> to chek its status.</h2>
           {% endif %}
 
 <h1>
