@@ -551,8 +551,8 @@ def go(name, id):
         sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
         tot = tot - sh_co.price_per_minute
         points = points - sh_co.points
-        if count > 0:
-            avg = float("{:.2f}".format(tot / count))
+    if count > 0:
+        avg = float("{:.2f}".format(tot / count))
     return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=points, avg=avg,
                            id_reservation=id_reservation, name_reservation=name_reservation, session2=True)
 
