@@ -262,7 +262,10 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name, id):
     # creating a map in the view
+    # da vedere cosa fare una volta scaduto il timer
     email = session['email']
+    if not email:
+        return redirect(url_for('login_page'))
     user = User.query.filter_by(email=email).first()
     cookie = request.cookies.get(session['email'])
     form1 = Delete()
@@ -484,12 +487,10 @@ def prize():
     if 'email' not in session:
         return redirect(url_for('login_page'))
     user = User.query.filter_by(email=session['email']).first()
-    if user.points==None:
-        user.points=0
     form = ReservateForm()
     flag = True
-    ord = Prize.query.filter_by().order_by(desc(Prize.points)).all()
-    if len(ord)==0:
+    ord = Prize.query.filter_by().order_by(Prize.points).all()
+    if user.points < ord[0].points:
         flag=False
     return render_template('prize.html', ord=ord,  form=form, user=user, flag=flag)
 
