@@ -1,5 +1,7 @@
 import os
 from datetime import datetime, date, time, timedelta
+from time import strptime
+
 from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -55,17 +57,19 @@ photos = UploadSet('photos', IMAGES)  # max 16 MB di immagini, se di piu cambiar
 configure_uploads(app, photos)
 patch_request_class(app)
 
-from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean, Flag, Prize
+from flag import Flag
+from model import User, SharingCompany, Transportation, Rating, FinalFeedback, Mean, Prize
 from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackForm, RecoverForm, ReservateForm, Delete, \
     Unlock, SelectMean
 
 flag = Flag()
+flag2=Flag()
+
 """
 @app.before_first_request
 def create_db():
     db.drop_all()
     db.create_all()
-
     s1 = SharingCompany(name="Car2go", date_of_registration=date.today(),num_vehicles = 50,
                         price_per_minute = 0.26, min_age = 18, type_vehicle = "car", type_motor="electric", points="80", reservation_time=time(minute=15))
     s2 = SharingCompany(name="Enjoy", date_of_registration=date.today(), num_vehicles =40,
@@ -84,12 +88,9 @@ def create_db():
         lng=uniform(7.634643, 7.688886)
         m1 = Mean(id=id, sharing_company="Enjoy", lat=lat, lng=lng)
         db.session.add(m1)
-
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
-
-
     db.session.commit()
 """
 
@@ -262,7 +263,10 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name, id):
     # creating a map in the view
+    # da vedere cosa fare una volta scaduto il timer
     email = session['email']
+    if not email:
+        return redirect(url_for('login_page'))
     user = User.query.filter_by(email=email).first()
     cookie = request.cookies.get(session['email'])
     form1 = Delete()
@@ -276,10 +280,11 @@ def reservation(name, id):
         return resp
     if form2.submit2.data and form2.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
-
+        session['unlock'] = 'unlock'
         flag.SetFlag(False)
-        resp = make_response(redirect(url_for('homepage')))
+        resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
+
 
         return resp
 
@@ -484,12 +489,10 @@ def prize():
     if 'email' not in session:
         return redirect(url_for('login_page'))
     user = User.query.filter_by(email=session['email']).first()
-    if user.points==None:
-        user.points=0
     form = ReservateForm()
     flag = True
-    ord = Prize.query.filter_by().order_by(desc(Prize.points)).all()
-    if len(ord)==0:
+    ord = Prize.query.filter_by().order_by(Prize.points).all()
+    if user.points < ord[0].points:
         flag=False
     return render_template('prize.html', ord=ord,  form=form, user=user, flag=flag)
 
@@ -548,16 +551,24 @@ def go(name, id):
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
-
-        user.points = user.points + sh.points
         reservation_time = sh.reservation_time
         seconds = sh.reservation_time.hour * 3600 + sh.reservation_time.minute * 60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
+        flag2.SetFlag(False)
+        session['Unlock']=tr.user+","+ tr.sharing_company +","+ str(tr.date)+","+str(tr.id)
         send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
                   reservation_time=reservation_time)
+
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
-    ass = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
+    if 'unlock' not in session and user.email in request.cookies and flag2.getFlag()==False:
+
+        tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+        flag2.SetFlag(True)
+        db.session.delete(tr)
+        db.session.commit()
+
+    ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
     count = 0
     points = 0
     tot = 0
@@ -567,7 +578,7 @@ def go(name, id):
         for tr in ass:
             sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
             dict[tr.date] = sh_co
-            points = points + sh_co.points
+
             count = count + 1
             tot = tot + sh_co.price_per_minute
         id_reservation = ass[0].id
@@ -576,17 +587,23 @@ def go(name, id):
     else:
         id_reservation = ''
         name_reservation = ""
+    if 'unlock' in session:
+        if flag2.getFlag() == True:
+            st=session['Unlock']
+            tt= st.split(",")
+            tr = Transportation(tt[1], tt[2], strptime(tt[3]), int(tt[4]))
+            db.session.add(tr)
+            db.session.commit()
+        sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
+        user.points = user.points + sh_co.points
+        session.pop('unlock', None)
+
     if 'delete' in session and flag.getFlag() == False:
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
         flag.SetFlag(False)
-        db.session.delete(ass[0])
-        db.session.commit()
-        ass.remove(to_delete)
-        count = count - 1
-        sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
-        tot = tot - sh_co.price_per_minute
-        user.points = user.points-sh_co.points
+
+
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
 

@@ -3,19 +3,6 @@ from datetime import datetime
 from app import db
 
 
-
-class Flag():
-    flag=False
-
-    def getFlag(self):
-        return self.flag
-
-    def SetFlag(self, bool):
-        if bool==True:
-            self.flag=True
-        else:
-            self.flag = False
-
 class User(db.Model):
     __tablename__ = "users"
     email = db.Column(db.String(100), primary_key=True)
@@ -25,8 +12,9 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     date_of_registration = db.Column(db.DateTime, default=datetime.now())
     transportations = db.relationship("Transportation", backref="user_tr")
-    points = db.Column(db.Integer)
+    points = db.Column(db.Integer, default=0)
 
+    #Da fare funzione getPoints and setPoints
 
     def get_date_of_registration(self):
         return self.date_of_registration.strftime("%Y-%m-%d")
