@@ -91,9 +91,13 @@ def create_db():
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
+    p1 = Prize(name="Travel", company="Rainair", points=40)
+    p2 = Prize(name="Travel", company="Lufthansa", points=10)
+    db.session.add(p1)
+    db.session.add(p2)
     db.session.commit()
-"""
 
+"""
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):

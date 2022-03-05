@@ -1,46 +1,46 @@
 {% extends "footers.html" %}
 {% block content %}
 
-<div class="container-fluid">
   <div class="row">
-    <div class="col-md-3 py-3">
+    <div class="col-md-3 pt-3 px-4">
         <div class="box-profile">
-      <div class="pt-3">
         <ul class="nav flex-column">
-          <li class="nav-item">
-              {{ user.name }} {{ user.family_name }}
+          <li>
+              <strong>{{ user.name }} {{ user.family_name.upper() }}</strong>
           </li>
-          <li class="nav-item">
+          <li >
 
               Date of birth: {{ user.date_of_birth }}
 
           </li>
-          <li class="nav-item">
+          <li>
 
               Email: {{ user.email}}
 
           </li>
-          <li class="nav-item">
+          <li>
 
-              Registered on Greengo on: {{ user.get_date_of_registration() }}
+              Registered on <strong class="green">GreenGo</strong> on: <br>{{ user.get_date_of_registration() }}
 
           </li>
-          <li class="nav-item">
+          <li>
 
               Total means taken: {{ count }}
 
           </li>
-          <li class="nav-item">
+          <li>
             Total points: {{ points }}
           </li>
         </ul>
 
 
       </div>
-    </div>
-    </div>
+        <div class="container pt-2">
+            <img src="/static/little.png" width="100%" height="100%"/>
+        </div>
 
-    <div class="col-md-9 py-3">
+    </div>
+    <div class="col-md-9 px-4">
 
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 {% if user.email in request.cookies %}
@@ -53,6 +53,8 @@
         <h2>Summary</h2>
 
       </div>
+    <div class="row">
+    <div class="col-sm-7">
         <p>Hi {{ user.name }}, thanks for being an active user!</p>
           {% if count>0 %}
           <p>Up to now, you have a total of {{ points }} points{% if count>1 %}s{% endif %}!</p>
@@ -60,8 +62,11 @@
               <p>Please, <a href="/feedback">click here</a> to give us a feedback!</p>
               <p>See below your travels' records</p>
       {% endif %}
-
-
+</div>
+    <div class="col-sm-5 none">
+        <img src="/static/profile2.png" width="80%" height="80%"/>
+    </div>
+    </div>
       <h2>History records</h2>
     {% if list %}
       <div class="table-responsive">
