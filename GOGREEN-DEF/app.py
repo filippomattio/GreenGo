@@ -595,7 +595,7 @@ def go(name, id):
         if flag2.getFlag() == True:
             st=session['Unlock']
             tt= st.split(",")
-            tr = Transportation(tt[1], tt[2], strptime(tt[3]), int(tt[4]))
+            tr = Transportation(tt[0], tt[1], strptime(tt[2]), int(tt[3]))
             db.session.add(tr)
             db.session.commit()
         sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
