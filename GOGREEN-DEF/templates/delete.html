@@ -2,20 +2,21 @@
 {% block content %}
 <div class="container px-4 py-5">
     <h2 class="pb-2 border-bottom">Hi {{ user.name }}, why do you want to delete your account?</h2>
+<div class="row">
+        <form class="col-8" method="post">
 
-        <form method="post">
     {{ form.hidden_tag() }}
     <div class="row">
-  <div class="col-md-8">
+
     <label for= '{{ form.motivation.label }}' class="h5">{{ form.motivation.label }}</label>
-    {{ form.motivation(type="checkbox")}}
+    {{ form.motivation(class="no-bullet")}}
       {% for error in form.motivation.errors %}
                <div class="alert-danger">{{ error }}</div>
            {% endfor %}
-  </div>
+
 </div>
         <div class="row">
-  <div class="col-md-8">
+  <div class="col-8">
     <label for= '{{ form.other.label }}' class="h5">{{ form.other.label }}</label>
     {{ form.other(class="form-control") }}
       {% for error in form.other.errors %}
@@ -31,5 +32,10 @@
    </div>
 
 </form>
+<div class="col-4 no-padding">
+    <img src="/static/profile.png" class="none-510 pt-4" width="80%" height="auto"/>
 </div>
+</div>
+</div>
+
 {% endblock content %}

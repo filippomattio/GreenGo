@@ -211,7 +211,7 @@ def mapview2():
         lat=45.0578564352,
         lng=7.65664237342,
         center_on_user_location=True,
-        style="height:900px;width:100%;margin:4;",
+        style="height:500px;width:100%;margin:4;",
         zoom=19,
 
         markers=[
