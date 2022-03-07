@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, date, time, timedelta
-from time import strptime
+from time import strptime, strftime
 
 from flask import Flask, make_response, request
 from flask import render_template, redirect, url_for, session, flash
@@ -617,7 +617,7 @@ def go(name, id):
         if flag2.getFlag() == True:
             st = session['Unlock']
             tt = st.split(",")
-            tr = Transportation(tt[0], tt[1], strftime(tt[2]), int(tt[3]))
+            tr = Transportation(tt[0], tt[1], datetime.strptime(tt[2], '%Y-%m-%d %H:%M:%S.%f'), int(tt[3]))
             db.session.add(tr)
             db.session.commit()
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
