@@ -2,7 +2,7 @@
 {% block content %}
 
   <div class="row">
-    <div class="col-md-3 pt-3 px-4">
+    <div class="col-lg-3 pt-3 px-4">
         <div class="box-profile">
         <ul class="nav flex-column">
           <li>
@@ -40,21 +40,26 @@
         </div>
 
     </div>
-    <div class="col-md-9 px-4">
+    <div class="col-lg-9 px-4">
 
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-{% if user.email in request.cookies %}
-          <p>You have a reservation active, click <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
-          {% endif %}
-{% if session['delete']=='clear' %}
-          <p>You have deleted your last reservation, {{ name_reservation }}   {{ id_reservation }}</p>
-          {% set session2=False  %}
-          {% endif %}
+
         <h2>Summary</h2>
 
       </div>
+{% if user.email in request.cookies %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <p>You have a reservation active, click <a href="/reservation/{{ name_reservation }}/{{ id_reservation }}">here</a> to check its status.</p>
+    </div>
+          {% endif %}
+{% if session['delete']=='clear' %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <p>You have deleted your last reservation, {{ name_reservation }}   {{ id_reservation }}</p>
+    </div>
+          {% set session2=False  %}
+          {% endif %}
     <div class="row">
-    <div class="col-sm-7">
+    <div class="col-md-7">
         <p>Hi {{ user.name }}, thanks for being an active user!</p>
           {% if count>0 %}
           <p>Up to now, you have a total of {{ points }} points{% if count>1 %}s{% endif %}!</p>
@@ -63,7 +68,7 @@
               <p>See below your travels' records</p>
       {% endif %}
 </div>
-    <div class="col-sm-5 none">
+    <div class="col-md-5 none">
         <img src="/static/profile2.png" width="80%" height="80%"/>
     </div>
     </div>
@@ -103,7 +108,7 @@
 
     </div>
   </div>
-</div>
+
 
 
 

@@ -23,12 +23,17 @@
         -moz-user-select: none;
         user-select: none;
       }
-    @media screen and (max-width: 720px){
-    .none{
+    @media screen and (max-width: 768px) {
+        .none {
+            display: none;
+        }
+    }
+        @media screen and (max-width: 992px){
+    .none-lg{
        display: none;
     }
-
 }
+
       .nav {
           display: block;
       }
@@ -80,9 +85,10 @@
     border-top: 1px solid green!important;
 }
 
+
 .table-striped>tbody>tr:nth-of-type(odd)>*{
     color:white;
-    background-color: green;
+    background-color: forestgreen;
 }
 .no-bullet{
     list-style-type: none;
@@ -137,6 +143,9 @@
           </li>
             <li class="nav-item">
             <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/settings">Settings</a>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/profile">Profile</a>
           </li>
         </ul>
         <form class="d-flex">

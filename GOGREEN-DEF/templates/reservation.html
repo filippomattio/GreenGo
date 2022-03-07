@@ -4,13 +4,13 @@
 <head>
     {{sndmap.js}}
     </head>
-    <div class="container-fluid">
-    <div class="row">
-        <div id="sidebarMenu" class="col-md-3">
-            <div class="position-sticky pt-3">
+
+    <div class="row px-3 mx-1 py-4 mt-5">
+        <div class="col-lg-3">
+            <div class="box-profile">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        {{ user.name }} {{ user.family_name }}
+                        <strong>{{ user.name }} {{ user.family_name.upper() }}</strong>
                     </li>
 
                     <li class="nav-item">
@@ -21,37 +21,39 @@
 
   <li class="nav-item">
 
-                      <br>
-                      <br>
-                    </li>
-                    <li class="nav-item">
+    Residual time to unlock the mean: {{ time }}
+  </li>
 
-
-                           <p>{{ sndmap.html }}</p>
-
-                    </li>
                 </ul>
 
 
             </div>
+            <div class="py-5 ms-5 mt-4 none-lg">
+                <img src="/static/time.png" width="80%" height="auto" class="center"/>
+            </div>
         </div>
+        <div class="col-lg-9 mt-4">
+        <main>
 
-        <main class="col-md-9">
-
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom">
 
                 {% if user.email in request.cookies %}
-                    <p>You have a reservation active, click on the button delete, if you want to cancel it, or click on Unlock if you want to unlock your transport </p>
-
-                    <p><form method="post" >
+                    <div class="row">
+                    <p class="col-12">You have a reservation active, click on the button delete, if you want to cancel it, or click on Unlock if you want to unlock your transport </p>
+                    </div>
+                    <div class="row">
+                    <form method="post" >
                         {{ form1.hidden_tag() }}
-
-                     <p>  {{ form1.submit1(class='w-100 btn btn-lg btn-primary')}} </p>
+                        <div class="mx-2">
+                       {{ form1.submit1(class='w-100 btn btn-lg btn-primary')}}
+                        </div>
 
       {% if user.email not in request.cookies %}
+          <div class="mx-2">
             {{ form1.submit(class='w-100 btn btn-lg btn-primary')}}
+          </div>
           {% endif %}
-    </form></p>
+                    </form></div>
 
 {% endif %}
               <br>
@@ -59,26 +61,32 @@
 
           {% if user.email in request.cookies %}
 
-                 <p>   <form method="post" >
+                 <div class="row">   <form method="post" >
                         {{ form2.hidden_tag() }}
-
-                      <p> {{ form2.submit2(class='w-100 btn btn-lg btn-primary')}}</p>
+                    <div class="mx-2">
+                      {{ form2.submit2(class='w-100 btn btn-lg btn-primary')}}
+                    </div>
 
       {% if user.email not in request.cookies %}
+          <div class="mx-2">
             {{ form2.submit(class='w-100 btn btn-lg btn-primary')}}
+          </div>
           {% endif %}
-    </form></p>
+    </form></div>
 {% endif %}
 
       </div>
-
-
-
         </main>
-    </div>
-<div>
-<p>Residual time to unlock the mean: {{ time }}</p>
+
+<div class="row">
+    {{ sndmap.html }}
 </div>
     </div>
+    </div>
+
+
+
+
+
 
 {% endblock content%}

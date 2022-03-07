@@ -5,26 +5,29 @@
 
 
 
-<h2 class="pb-2 border-bottom">Use the {{ user.points }} points you have accumulated!</h2>
+<h2 class="pb-2 border-bottom">Use the {{ user.points }} points you have accumulated!<img src="/static/prize-2.png" width="60px" height="auto" class="mx-2"/></h2>
+    <div class="row">
+        <div class="col-md-11">
 <p>Below are listed the means of price tou can access with your GreenPoints!</p>
 <h2>Thank you for your GreenChoice!</h2>
-
+            </div>
+        <div class="col-1">
+            <img src="/static/points.png" width="70%" height="auto" class="none"/>
+        </div>
+</div>
  {% if flag==True %}
 <div class="list-group">
 {% for sc in ord %}
     <div class="row">
-    <div class="col-6 col-md-10">
-
+    <div class="col-12">
+<div class="list-group-item list-group-item-action">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{ sc.name }}</h5>
       <small>{{ sc.name}}</small>
     </div>
-    <p class="mb-1">Company: {{ sc.company }}</p>
-    <small>A total of {{ sc.points }} points</small>
-  </a>
-    </div>
-    <div class="col-6 col-md-2">
-      <form method="post" action="/prize/{{ sc.name }}/{{ sc.company }}">
+        <div class="d-flex w-100 justify-content-between">
+    <p class="mb-1">Company: <a href="https://www.{{ sc.company }}.com">{{ sc.company }}</a></p>
+            <form method="post" action="/prize/{{ sc.name }}/{{ sc.company }}">
     {{ form.hidden_tag() }}
             {% if user.points < sc.points %}
           {{ form.submit(class='btn btn-primary disabled')}}
@@ -37,9 +40,11 @@
 
 
     </form>
-          </div>
+        </div>
+    <small>A total of {{ sc.points }} points</small>
     </div>
-
+    </div>
+</div>
 
 {% endfor %}
 </div>

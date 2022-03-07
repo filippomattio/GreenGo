@@ -15,7 +15,8 @@ class LoginForm(FlaskForm):
 class ReservateForm(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit = SubmitField('Discover more')
-
+class PrizeForm(FlaskForm):
+    submit = SubmitField('Buy now')
 class Delete(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit1 = SubmitField('CANCEL')

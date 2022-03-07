@@ -9,11 +9,14 @@
 
   <body>
 
-  <div class="container">
+  <div class="{{ class_temp }}">
                    <h2 class="pb-2 border-bottom">Welcome {{ username }}, choose your transport <img src="/static/map-car.png" width="60px" height="auto" class="mx-2"/><img src="/static/map-bicycle.png" width="60px" height="auto" class="mx-2"/><img src="/static/map-moto.png" width="60px" height="auto" class="mx-2"/><img src="/static/map-scooter.png" width="60px" height="auto" class="mx-2"/></h2>
-
-        <p>Below in the map there are all the means you can drive</p>
-
+{% if class_temp == "container px-4 py-4" %}
+        <p>Below in the map there are all the means you can drive.</p>
+{% endif %}
+  {% if class_temp == "container px-4 py-5 mt-4" %}
+  <p>Below in the map there are all the means of the type you selected in the previous page.</p>
+  {% endif %}
 
 
  <div class="map pt-4" align="center" >
