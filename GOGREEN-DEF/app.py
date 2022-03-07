@@ -63,7 +63,7 @@ from form import RegistrationForm, LoginForm, ChangeForm, DeleteForm, FeedbackFo
     Unlock, SelectMean, PrizeForm
 
 flag = Flag()
-flag2=Flag()
+flag2 = Flag()
 
 """
 @app.before_first_request
@@ -98,6 +98,7 @@ def create_db():
     db.session.commit()
 
 """
+
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):
@@ -182,7 +183,7 @@ def mapview(name):
         sndmap.markers.append(new_marker)
     user = User.query.filter_by(email=session['email']).first()
     username = user.name
-    class_temp="container px-4 py-5 mt-4"
+    class_temp = "container px-4 py-5 mt-4"
     return render_template('map.html', sndmap=sndmap, username=username, class_temp=class_temp)
 
 
@@ -236,11 +237,11 @@ def mapview2():
                 'lng': m.lng,
                 'infobox': "<div  ><a class='link_mono' href='https://ridedott.com/it'>Dott</a></div>"
                            "<br>"
-                           "<form action='/go/"+str(m.sharing_company)+"/" + str(m.id) + "'>"
-                                                                  "<input type='submit' class='btn btn-primary' value='Reserve now'>"
-                                                                  " </form>"
-                                                                  "<br>"
-                                                                  "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
+                           "<form action='/go/" + str(m.sharing_company) + "/" + str(m.id) + "'>"
+                                                                                             "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                                                                                             " </form>"
+                                                                                             "<br>"
+                                                                                             "<img src='https://i.etsystatic.com/17857814/r/il/7614c8/1595286099/il_fullxfull.1595286099_3t04.jpg' width='100' height='100'/>"
             }
         if m.sharing_company == 'Enjoy' and sh_co.min_age <= age:
             new_marker = {
@@ -249,11 +250,11 @@ def mapview2():
                 'lng': m.lng,
                 'infobox': "<div  ><a class='link_mono' href='https://enjoy.eni.com/it'>Enjoy</a></div>"
                            "<br>"
-                           "<form action='/go/"+str(m.sharing_company)+"/" + str(m.id) + "'>"
-                                                                    "<input type='submit' class='btn btn-primary' value='Reserve now'>"
-                                                                    " </form>"
-                                                                    "<br>"
-                                                                    "<img src='data:image/png;base64,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' width='100' height='100'/>"
+                           "<form action='/go/" + str(m.sharing_company) + "/" + str(m.id) + "'>"
+                                                                                             "<input type='submit' class='btn btn-primary' value='Reserve now'>"
+                                                                                             " </form>"
+                                                                                             "<br>"
+                                                                                             "<img src='data:image/png;base64,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' width='100' height='100'/>"
             }
         sndmap.markers.append(new_marker)
     username = session.get('username')
@@ -292,7 +293,6 @@ def reservation(name, id):
         flag.SetFlag(False)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
-
 
         return resp
 
@@ -455,24 +455,24 @@ def confront_price():
         age -= 1
     form2 = SelectMean()
     flag = True
-    flagAll=True
+    flagAll = True
 
     if form2.submit2.data and form2.validate():
         if form2.select.data == 'all':
-            flagAll=False
+            flagAll = False
             ord = SharingCompany.query.filter(SharingCompany.min_age <= age
-                                             ).order_by(
+                                              ).order_by(
                 SharingCompany.price_per_minute).all()
 
-        if flagAll==True and len(SharingCompany.query.filter(SharingCompany.min_age <= age,
-                                           SharingCompany.type_vehicle == form2.select.data).all()) == 0:
+        if flagAll == True and len(SharingCompany.query.filter(SharingCompany.min_age <= age,
+                                                               SharingCompany.type_vehicle == form2.select.data).all()) == 0:
             flag = False
-        if flag and flagAll==True:
+        if flag and flagAll == True:
             ord = SharingCompany.query.filter(SharingCompany.min_age <= age,
-                                          SharingCompany.type_vehicle == form2.select.data).order_by(
+                                              SharingCompany.type_vehicle == form2.select.data).order_by(
                 SharingCompany.price_per_minute).all()
-        if flag==False and flagAll==True:
-            ord=[]
+        if flag == False and flagAll == True:
+            ord = []
 
 
     else:
@@ -484,8 +484,13 @@ def confront_price():
         return redirect(url_for('mapview'))
     if user.email in request.cookies:
         ass = Transportation.query.filter_by(user=user.email).order_by(desc(Transportation.date)).all()
-        id = ass[0].id
-        sh_co = ass[0].sharing_company
+        st = session['Unlock']
+        tt = st.split(",")
+
+        id = int(tt[3])
+        sh_co = tt[1]
+        # id = ass[0].id
+        # sh_co = ass[0].sharing_company
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id,
                                form2=form2, flag=flag)
     if form2.submit2.data and form2.validate():
@@ -503,23 +508,26 @@ def prize():
     flag = True
     ord = Prize.query.filter_by().order_by(Prize.points).all()
     if user.points < ord[0].points:
-        flag=False
-    return render_template('prize.html', ord=ord,  form=form, user=user, flag=flag)
+        flag = False
+    return render_template('prize.html', ord=ord, form=form, user=user, flag=flag)
+
 
 @app.route('/prize/<string:name>/<string:company>', methods=['POST', 'GET'])
-def prize2(name,company):
+def prize2(name, company):
     if 'email' not in session:
         return redirect(url_for('login_page'))
     user = User.query.filter_by(email=session['email']).first()
     form = PrizeForm()
     flag = True
     ord = Prize.query.filter_by(company=company, name=name).order_by(desc(Prize.points)).first()
-    user.points=user.points-ord.points
+    user.points = user.points - ord.points
     try:
-        send_mail(session['email'], "Coupon buyed", "mailPrize", points=user.points, company=company, name_coupon=name, name_user=user.name)
+        send_mail(session['email'], "Coupon buyed", "mailPrize", points=user.points, company=company, name_coupon=name,
+                  name_user=user.name)
     except:
         return redirect(url_for('homepage'))
     return redirect(url_for('homepage'))
+
 
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
@@ -555,11 +563,16 @@ def go(name, id):
     email = session['email']
     user = User.query.filter_by(email=email).first()
     if user.points == None:
-        user.points=0
-    if user.email in request.cookies and name!='profile':
+        user.points = 0
+    if user.email in request.cookies and name != 'profile':
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
-        the_tr = tot_tr[0]
-        return redirect(url_for('reservation', name=the_tr.sharing_company, id=the_tr.id))
+        st = session['Unlock']
+        tt = st.split(",")
+
+        id = int(tt[3])
+        sh_co = tt[1]
+
+        return redirect(url_for('reservation', name=sh_co, id=id))
 
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
@@ -569,13 +582,12 @@ def go(name, id):
         db.session.add(tr)
         db.session.commit()
         flag2.SetFlag(False)
-        session['Unlock']=tr.user+","+ tr.sharing_company +","+ str(tr.date)+","+str(tr.id)
+        session['Unlock'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
                   reservation_time=reservation_time)
 
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
-    if 'unlock' not in session and user.email in request.cookies and flag2.getFlag()==False:
-
+    if 'unlock' not in session and user.email in request.cookies and flag2.getFlag() == False:
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
         flag2.SetFlag(True)
         db.session.delete(tr)
@@ -594,6 +606,7 @@ def go(name, id):
 
             count = count + 1
             tot = tot + sh_co.price_per_minute
+
         id_reservation = ass[0].id
         name_reservation = ass[0].sharing_company
         to_delete = ass[0]
@@ -602,12 +615,13 @@ def go(name, id):
         name_reservation = ""
     if 'unlock' in session:
         if flag2.getFlag() == True:
-            st=session['Unlock']
-            tt= st.split(",")
-            tr = Transportation(tt[0], tt[1], strptime(tt[2]), int(tt[3]))
+            st = session['Unlock']
+            tt = st.split(",")
+            tr = Transportation(tt[0], tt[1], strftime(tt[2]), int(tt[3]))
             db.session.add(tr)
             db.session.commit()
-        sh_co = SharingCompany.query.filter_by(name=to_delete.sharing_company).first()
+        tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+        sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         user.points = user.points + sh_co.points
         session.pop('unlock', None)
 
@@ -615,7 +629,6 @@ def go(name, id):
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
         flag.SetFlag(False)
-
 
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
