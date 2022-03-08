@@ -45,10 +45,16 @@
           font-size: 3.5rem;
         }
       }
+      a{
+          color: forestgreen;
+      }
+      a:hover{
+          color: darkgreen;
+      }
        .pt-3{
           padding-top: 4rem!important;
       }
-      .btn-primary{
+      .btn-primary, .btn-secondary, .btn-primary.disabled{
           background-color: green;
           border-color: green;
       }
@@ -139,7 +145,7 @@
             <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/logout">Logout</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/prize">Prize</a>
+            <a class="nav-link" href="/prize">Prize</a>
           </li>
             <li class="nav-item">
             <a class="nav-link {% if 'email' not in session %}disabled{% endif %}" href="/settings">Settings</a>

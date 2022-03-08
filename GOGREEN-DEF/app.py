@@ -502,14 +502,15 @@ def confront_price():
 @app.route('/prize', methods=['POST', 'GET'])
 def prize():
     if 'email' not in session:
-        return redirect(url_for('login_page'))
-    user = User.query.filter_by(email=session['email']).first()
-    form = PrizeForm()
-    flag = True
-    ord = Prize.query.filter_by().order_by(Prize.points).all()
-    if user.points < ord[0].points:
+        points=0
         flag = False
-    return render_template('prize.html', ord=ord, form=form, user=user, flag=flag)
+    else:
+        user = User.query.filter_by(email=session['email']).first()
+        points=user.points
+        flag = True
+    form = PrizeForm()
+    ord = Prize.query.filter_by().order_by(Prize.points).all()
+    return render_template('prize.html', ord=ord, form=form, points=points, flag=flag)
 
 
 @app.route('/prize/<string:name>/<string:company>', methods=['POST', 'GET'])
@@ -522,7 +523,7 @@ def prize2(name, company):
     ord = Prize.query.filter_by(company=company, name=name).order_by(desc(Prize.points)).first()
     user.points = user.points - ord.points
     try:
-        send_mail(session['email'], "Coupon buyed", "mailPrize", points=user.points, company=company, name_coupon=name,
+        send_mail(session['email'], "Coupon bought", "mailPrize", points=user.points, company=company, name_coupon=name,
                   name_user=user.name)
     except:
         return redirect(url_for('homepage'))

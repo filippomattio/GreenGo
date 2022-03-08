@@ -4,18 +4,22 @@
     <div class="container px-4 py-5">
 
 
-
-<h2 class="pb-2 border-bottom">Use the {{ user.points }} points you have accumulated!<img src="/static/prize-2.png" width="60px" height="auto" class="mx-2"/></h2>
+{% if flag==True %}
+<h2 class="pb-2 border-bottom">Use the {{ points }} points you have accumulated!<img src="/static/prize-2.png" width="60px" height="auto" class="mx-2"/></h2>
+    {% endif %}
+    {% if flag==False %}
+        <h2>You are not registered!</h2>
+<p class="pb-2 border-bottom">Move on and <a href="/registration">register now</a> to obtain fantastic gifts!</p>
+    {% endif %}
     <div class="row">
         <div class="col-md-11">
-<p>Below are listed the means of price tou can access with your GreenPoints!</p>
+<p>Below are listed the means of price you can access with your GreenPoints!</p>
 <h2>Thank you for your GreenChoice!</h2>
             </div>
         <div class="col-1">
             <img src="/static/points.png" width="70%" height="auto" class="none"/>
         </div>
 </div>
- {% if flag==True %}
 <div class="list-group">
 {% for sc in ord %}
     <div class="row">
@@ -29,11 +33,11 @@
     <p class="mb-1">Company: <a href="https://www.{{ sc.company }}.com">{{ sc.company }}</a></p>
             <form method="post" action="/prize/{{ sc.name }}/{{ sc.company }}">
     {{ form.hidden_tag() }}
-            {% if user.points < sc.points %}
+            {% if points < sc.points %}
           {{ form.submit(class='btn btn-primary disabled')}}
 
     {% endif %}
-        {% if user.points>=sc.points %}
+        {% if points>=sc.points %}
           {{ form.submit(class='btn btn-primary')}}
 
     {% endif %}
@@ -48,14 +52,12 @@
 
 {% endfor %}
 </div>
-{% endif %}
-
-
-    {% if flag==False %}
-      <h2 class="pb-2 border-bottom">You have not enough points!</h2>
-<p>Move on and <a href="/reserve">reserve</a> some green transport!</p>
-
+    {% if flag == True %}
+    <p class="mt-3">Move on and <a href="/reserve">reserve</a> a mean to increase your score!</p>
     {% endif %}
+
+
+
 
 
 
