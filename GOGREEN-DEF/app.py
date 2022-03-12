@@ -271,34 +271,27 @@ def send_mail(to, subject, template, **kwargs):  # to is could be a list
 
 @app.route("/reservation/<string:name>/<string:id>", methods=['GET', 'POST'])
 def reservation(name, id):
-    # creating a map in the view
-    # da vedere cosa fare una volta scaduto il timer
-    email = session['email']
-    if not email:
-        return redirect(url_for('login_page'))
-    user = User.query.filter_by(email=email).first()
     cookie = request.cookies.get(session['email'])
+    if 'email' not in session or not cookie:
+        return redirect(url_for('homepage'))
+    email = session['email']
+    user = User.query.filter_by(email=email).first()
     form1 = Delete()
     form2 = Unlock()
-
     if form1.submit1.data and form1.validate():
-        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
         session['delete'] = 'clear'
         flag.SetFlag(True)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
         return resp
     if form2.submit2.data and form2.validate():
-        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
         session['unlock'] = 'unlock'
         flag.SetFlag(False)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
-
         return resp
-
-    if 'email' not in session or not cookie:
-        return redirect(url_for('homepage'))
     id = int(id)
     g = geocoder.ipinfo('me')
     latlng = g.latlng
@@ -534,7 +527,9 @@ def prize2(name, company):
 @app.route('/settings', methods=['POST', 'GET'])
 def set():
     return render_template('settings.html')
-
+@app.route('/aboutus', methods=['POST', 'GET'])
+def aboutus():
+    return render_template('aboutus.html')
 
 @app.route('/profile', methods=['POST', 'GET'])
 def pro():
@@ -564,18 +559,13 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
-    if user.points == None:
-        user.points = 0
     if user.email in request.cookies and name != 'profile':
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
         st = session['unlock']
         tt = st.split(",")
-
         id = int(tt[3])
         sh_co = tt[1]
-
         return redirect(url_for('reservation', name=sh_co, id=id))
-
     if email and name != 'profile':
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
@@ -588,7 +578,6 @@ def go(name, id):
              session['unlock'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
                   reservation_time=reservation_time)
-
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
     if 'unlock' not in session and user.email in request.cookies and flag2.getFlag() == False:
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
@@ -610,14 +599,11 @@ def go(name, id):
         for tr in ass:
             sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
             dict[tr.date] = sh_co
-
             count = count + 1
             tot = tot + sh_co.price_per_minute
-
         id_reservation = ass[0].id
         name_reservation = ass[0].sharing_company
         to_delete = ass[0]
-
     if 'unlock' in session:
         if flag2.getFlag() == True:
             st = session['unlock']
@@ -629,15 +615,12 @@ def go(name, id):
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         user.points = user.points + sh_co.points
         session.pop('unlock', None)
-
     if 'delete' in session and flag.getFlag() == False:
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
         flag.SetFlag(False)
-
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
-
     return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=user.points, avg=avg,
                            id_reservation=id_reservation, name_reservation=name_reservation, session2=True)
 
