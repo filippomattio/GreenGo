@@ -593,6 +593,15 @@ def go(name, id):
         flag2.SetFlag(True)
         db.session.delete(tr)
         db.session.commit()
+    elif 'unlock' in session and user.email in request.cookies and flag2.getFlag() == False:
+        tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+        id_reservation = tr.id
+        name_reservation = tr.sharing_company
+        session['id_first']=tr.id
+        session['sc_first'] = tr.sharing_company
+        flag2.SetFlag(True)
+        db.session.delete(tr)
+        db.session.commit()
     else:
         id_reservation = ""
         name_reservation = ""
@@ -621,7 +630,7 @@ def go(name, id):
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         user.points = user.points + sh_co.points
-        session.pop('unlock', None)
+        #session.pop('unlock', None)
     if 'delete' in session and flag.getFlag() == False:
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
