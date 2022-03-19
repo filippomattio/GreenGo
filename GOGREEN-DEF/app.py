@@ -487,9 +487,14 @@ def confront_price():
         # sh_co = ass[0].sharing_company
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id,
                                form2=form2, flag=flag)
+    if user.email in request.cookies and 'unlock' not in session and flag2.getFlag():
+        return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=session['sc_first'] , id=session['id_first'],
+                               form2=form2, flag=flag)
+
     if form2.submit2.data and form2.validate():
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user,
                                form2=form2, flag=flag)
+
     return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, form2=form2, flag=flag)
 
 
@@ -559,7 +564,7 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
-    if user.email in request.cookies and name != 'profile':
+    if user.email in request.cookies and name != 'profile' and 'unlock' in session:
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
         st = session['unlock']
         tt = st.split(",")
@@ -583,6 +588,8 @@ def go(name, id):
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
         id_reservation = tr.id
         name_reservation = tr.sharing_company
+        session['id_first']=tr.id
+        session['sc_first'] = tr.sharing_company
         flag2.SetFlag(True)
         db.session.delete(tr)
         db.session.commit()
