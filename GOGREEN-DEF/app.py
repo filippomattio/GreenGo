@@ -66,7 +66,7 @@ flag = Flag()
 flag2 = Flag()
 
 
-
+"""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -112,8 +112,7 @@ def create_db():
     db.session.add(p1)
     db.session.add(p2)
     db.session.commit()
-
-
+"""
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
 def setcookie(name, id, email, seconds):
@@ -280,7 +279,7 @@ def mapview2():
                                                                                              "<br>"
                                                                                              "<img src='https://www.trenitalia.com/content/dam/tcom/immagini/trenitalia-img/offerte-e-servizi/servizi/416x359/416x359-Enjoy-ENI-CarSharing.jpg' width='100' height='100'/>"
             }
-        if m.sharing_company == 'Car2go':
+        if m.sharing_company == 'Car2go' and sh_co.min_age <= age:
             new_marker = {
                 'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/sportutilityvehicle.png',
                 'lat': m.lat,
@@ -293,7 +292,7 @@ def mapview2():
                                                                     "<br>"
                                                                     "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Car2go_logo.svg/1200px-Car2go_logo.svg.png' width='100' height='100'/>"
             }
-        if m.sharing_company == 'Mobike':
+        if m.sharing_company == 'Mobike' and sh_co.min_age <= age:
             new_marker = {
                 'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/cycling.png',
                 'lat': m.lat,
