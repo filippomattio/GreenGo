@@ -278,6 +278,7 @@ def reservation(name, id):
     user = User.query.filter_by(email=email).first()
     form1 = Delete()
     form2 = Unlock()
+    session['unlock'] = name+","+str(id)
     if form1.submit1.data and form1.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
         session['delete'] = 'clear'
@@ -287,7 +288,7 @@ def reservation(name, id):
         return resp
     if form2.submit2.data and form2.validate():
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
-        session['unlock'] = 'unlock'
+        session['validate'] = 'unlock'
         flag.SetFlag(False)
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
@@ -481,8 +482,8 @@ def confront_price():
         st = session['unlock']
         tt = st.split(",")
 
-        id = int(tt[3])
-        sh_co = tt[1]
+        id = int(tt[1])
+        sh_co = tt[0]
         # id = ass[0].id
         # sh_co = ass[0].sharing_company
         return render_template('reserve.html', ord=ord, min=minim, tot=tot, form=form, user=user, sh_co=sh_co, id=id,
@@ -566,42 +567,58 @@ def go(name, id):
     user = User.query.filter_by(email=email).first()
     if user.email in request.cookies and name != 'profile' and 'unlock' in session:
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
+
         st = session['unlock']
         tt = st.split(",")
-        id = int(tt[3])
-        sh_co = tt[1]
+        id = int(tt[1])
+        sh_co = tt[0]
         return redirect(url_for('reservation', name=sh_co, id=id))
     if email and name != 'profile':
+        session['unlock'] = name + "," + str(id)
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+        session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         reservation_time = sh.reservation_time
         seconds = sh.reservation_time.hour * 3600 + sh.reservation_time.minute * 60 + sh.reservation_time.second
         db.session.add(tr)
         db.session.commit()
         flag2.SetFlag(False)
-        if 'unlock' in session:
-             session['unlock'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
+        if 'validate' in session:
+             session['validate'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
                   reservation_time=reservation_time)
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
-    if 'unlock' not in session and user.email in request.cookies and flag2.getFlag() == False:
+    if 'unlock' in session and user.email in request.cookies and flag2.getFlag() == False:
+
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
-        id_reservation = tr.id
-        name_reservation = tr.sharing_company
+
+        if 'validate' in session:
+            session['validate'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
+        st = session['unlock']
+        tt = st.split(",")
+        id_reservation = int(tt[1])
+        name_reservation = tt[0]
+
         session['id_first']=tr.id
         session['sc_first'] = tr.sharing_company
         flag2.SetFlag(True)
         db.session.delete(tr)
         db.session.commit()
-    elif 'unlock' in session and user.email in request.cookies and flag2.getFlag() == False:
-        tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
-        id_reservation = tr.id
-        name_reservation = tr.sharing_company
-        session['id_first']=tr.id
-        session['sc_first'] = tr.sharing_company
+    elif 'unlock' in session and user.email in request.cookies and flag2.getFlag() == True:
+        st = session['info']
+        tt = st.split(",")
+
+        if 'validate' in session:
+            session['validate'] = session['info']
+        st = session['unlock']
+        tt = st.split(",")
+        id_reservation = int(tt[1])
+        name_reservation = tt[0]
+
+        session['id_first'] = int(tt[1])
+        session['sc_first'] = tt[0]
         flag2.SetFlag(True)
-        db.session.delete(tr)
-        db.session.commit()
+
     else:
         id_reservation = ""
         name_reservation = ""
@@ -620,9 +637,9 @@ def go(name, id):
         id_reservation = ass[0].id
         name_reservation = ass[0].sharing_company
         to_delete = ass[0]
-    if 'unlock' in session:
+    if 'validate' in session:
         if flag2.getFlag() == True:
-            st = session['unlock']
+            st = session['validate']
             tt = st.split(",")
             tr = Transportation(tt[0], tt[1], datetime.strptime(tt[2], '%Y-%m-%d %H:%M:%S.%f'), int(tt[3]))
             db.session.add(tr)
@@ -630,7 +647,7 @@ def go(name, id):
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         user.points = user.points + sh_co.points
-        #session.pop('unlock', None)
+        session.pop('validate', None)
     if 'delete' in session and flag.getFlag() == False:
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
