@@ -39,7 +39,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
 app.config[
-    'MAIL_USERNAME'] = 'greengo2022@email.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+    'MAIL_USERNAME'] = 'greengoo@mail.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
 app.config['MAIL_PASSWORD'] = 'Greengo2022'
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
@@ -391,7 +391,10 @@ def change():
             db.session.add(user)
             db.session.commit()
             flash("Password changed successfully!", 'newPassword')
-            send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
+            try:
+                send_mail(email, "Change Password", "mailChange", name=user.name, password=new_pass)
+            except:
+                return render_template('change.html', form=form)
             return render_template('change.html', form=form)
         return render_template('change.html', form=form)
     return redirect(url_for('homepage'))
@@ -553,7 +556,10 @@ def recover_page():
             new_pass = user.name[0:2] + user.family_name[0:2] + str(randint(1000, 100000000000))
             pass_c = bcrypt.generate_password_hash(new_pass)
             user.password = pass_c
-            send_mail(user.email, "New Password", "mailRecover", user=user, password=new_pass)
+            try:
+                send_mail(user.email, "New Password", "mailRecover", user=user, password=new_pass)
+            except:
+                return render_template("recover.html", form=form)
             return render_template("recover.html", form=form)
     return render_template("recover.html", form=form)
 
@@ -585,8 +591,10 @@ def go(name, id):
         flag2.SetFlag(False)
         if 'validate' in session:
              session['validate'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
-        send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
-                  reservation_time=reservation_time)
+        try:
+            send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr, reservation_time=reservation_time)
+        except:
+            return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
     if 'unlock' in session and user.email in request.cookies and flag2.getFlag() == False:
 
