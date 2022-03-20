@@ -39,7 +39,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
 app.config[
-    'MAIL_USERNAME'] = 'greengoo@mail.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+    'MAIL_USERNAME'] = 'greengo2022@email.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
 app.config['MAIL_PASSWORD'] = 'Greengo2022'
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
@@ -646,6 +646,7 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
+    session['unlock'] = name + "," + str(id)
     if user.email in request.cookies and name != 'profile' and 'unlock' in session:
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
 
@@ -655,7 +656,6 @@ def go(name, id):
         sh_co = tt[0]
         return redirect(url_for('reservation', name=sh_co, id=id))
     if email and name != 'profile':
-        session['unlock'] = name + "," + str(id)
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
@@ -733,8 +733,22 @@ def go(name, id):
         user.points = user.points + sh_co.points
         session.pop('validate', None)
     if 'delete' in session and flag.getFlag() == False:
+        if flag2.getFlag() == False:
+            tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+            flag2.SetFlag(True)
+            db.session.delete(tr)
+            db.session.commit()
+            count = count - 1
+            ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
+        if flag2.getFlag() == False:
+            tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+            flag2.SetFlag(True)
+            db.session.delete(tr)
+            db.session.commit()
+            count = count - 1
+            ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
         flag.SetFlag(False)
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
