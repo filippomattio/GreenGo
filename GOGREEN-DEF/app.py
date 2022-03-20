@@ -66,7 +66,7 @@ flag = Flag()
 flag2 = Flag()
 
 
-
+""""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -112,7 +112,7 @@ def create_db():
     db.session.add(p1)
     db.session.add(p2)
     db.session.commit()
-
+"""""
 
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
@@ -641,6 +641,7 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
+    session['unlock'] = name + "," + str(id)
     if user.email in request.cookies and name != 'profile' and 'unlock' in session:
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
 
@@ -650,7 +651,6 @@ def go(name, id):
         sh_co = tt[0]
         return redirect(url_for('reservation', name=sh_co, id=id))
     if email and name != 'profile':
-        session['unlock'] = name + "," + str(id)
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
@@ -726,8 +726,22 @@ def go(name, id):
         user.points = user.points + sh_co.points
         session.pop('validate', None)
     if 'delete' in session and flag.getFlag() == False:
+        if flag2.getFlag() == False:
+            tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+            flag2.SetFlag(True)
+            db.session.delete(tr)
+            db.session.commit()
+            count = count - 1
+            ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
         session['delete'] = ''
     if 'delete' in session and flag.getFlag() == True:
+        if flag2.getFlag() == False:
+            tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
+            flag2.SetFlag(True)
+            db.session.delete(tr)
+            db.session.commit()
+            count = count - 1
+            ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
         flag.SetFlag(False)
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
