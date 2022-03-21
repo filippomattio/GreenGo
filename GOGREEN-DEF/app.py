@@ -66,7 +66,7 @@ flag = Flag()
 flag2 = Flag()
 
 
-
+""""
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -102,7 +102,7 @@ def create_db():
         lat=uniform(45.039541, 45.095419)
         lng=uniform(7.634643, 7.688886)
         m1 = Mean(id=id, sharing_company="Mobike", lat=lat, lng=lng)
-        db.session.add(m1)
+        db.session.add(m1)        
     db.session.add(s1)
     db.session.add(s2)
     db.session.add(s3)
@@ -112,7 +112,7 @@ def create_db():
     db.session.add(p1)
     db.session.add(p2)
     db.session.commit()
-
+"""""
 
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
@@ -236,6 +236,8 @@ def mapview2():
     else:
         age = 99
         name = "new user"
+
+
     sndmap = Map(
 
         identifier="sndmap",
@@ -331,6 +333,7 @@ def reservation(name, id):
         tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
         session['delete'] = 'clear'
         flag.SetFlag(True)
+
         resp = make_response(redirect(url_for('pro')))
         resp.set_cookie(email, cookie, max_age=0)
         return resp
@@ -653,22 +656,21 @@ def go(name, id):
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
+        tt=session['unlock']
         reservation_time = sh.reservation_time
         seconds = sh.reservation_time.hour * 3600 + sh.reservation_time.minute * 60 + sh.reservation_time.second
-        db.session.add(tr)
-        db.session.commit()
+        #db.session.add(tr)
+        #db.session.commit()
         flag2.SetFlag(False)
-        if 'validate' in session:
-             session['validate'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         send_mail(email, "Greengo Reservation", "mailReserve", user=user, transportation=tr,
                   reservation_time=reservation_time)
         return redirect(url_for('setcookie', id=id, name=name, email=email, seconds=seconds))
-    if 'unlock' in session and user.email in request.cookies and flag2.getFlag() == False:
+    """"if 'unlock' in session and flag2.getFlag() == False:
 
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
 
         if 'validate' in session:
-            session['validate'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
+            session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
         st = session['unlock']
         tt = st.split(",")
         id_reservation = int(tt[1])
@@ -679,12 +681,8 @@ def go(name, id):
         flag2.SetFlag(True)
         db.session.delete(tr)
         db.session.commit()
-    elif 'unlock' in session and user.email in request.cookies and flag2.getFlag() == True:
-        st = session['info']
-        tt = st.split(",")
-
+    elif 'unlock' in session and flag2.getFlag() == True:
         if 'validate' in session:
-
             session['validate'] = 'True'
         st = session['unlock']
         tt = st.split(",")
@@ -694,10 +692,19 @@ def go(name, id):
         session['id_first'] = int(tt[1])
         session['sc_first'] = tt[0]
         flag2.SetFlag(True)
-
+   
+    else:
+        id_reservation = ""
+        name_reservation = """""
+    if 'unlock' in session:
+        st = session['unlock']
+        tt = st.split(",")
+        id_reservation = int(tt[1])
+        name_reservation = tt[0]
     else:
         id_reservation = ""
         name_reservation = ""
+
     ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
     count = 0
     points = 0
@@ -710,21 +717,35 @@ def go(name, id):
             dict[tr.date] = sh_co
             count = count + 1
             tot = tot + sh_co.price_per_minute
-        id_reservation = ass[0].id
-        name_reservation = ass[0].sharing_company
-        to_delete = ass[0]
+        if 'delete' not in session:
+            id_reservation = ass[0].id
+            name_reservation = ass[0].sharing_company
+
+    else:
+        ass=[]
     if 'validate' in session:
-        if flag2.getFlag() == True:
-            st = session['info']
-            tt = st.split(",")
-            tr = Transportation(tt[0], tt[1], datetime.strptime(tt[2], '%Y-%m-%d %H:%M:%S.%f'), int(tt[3]))
-            db.session.add(tr)
-            db.session.commit()
+        st = session['info']
+        tt = st.split(",")
+        tr = Transportation(user=tt[0], sharing_company= tt[1], date=datetime.strptime(tt[2], '%Y-%m-%d %H:%M:%S.%f'), id=int(tt[3]) )
+        db.session.add(tr)
+        db.session.commit()
         tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
         sh_co = SharingCompany.query.filter_by(name=tr.sharing_company).first()
+        dict[tr.date] = sh_co
+        count = count + 1
+        tot = tot + sh_co.price_per_minute
+        ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
         user.points = user.points + sh_co.points
         session.pop('validate', None)
     if 'delete' in session and flag.getFlag() == False:
+        session.pop('delete', None)
+    if 'delete' in session and flag.getFlag() == True:
+        flag.SetFlag(False)
+
+        session.pop('unlock', None)
+        session.pop('info', None)
+
+    """if 'delete' in session and flag.getFlag() == False:
         if flag2.getFlag() == False:
             tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
             flag2.SetFlag(True)
@@ -741,7 +762,7 @@ def go(name, id):
             db.session.commit()
             count = count - 1
             ass = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).all()
-        flag.SetFlag(False)
+        flag.SetFlag(False)"""
     if count > 0:
         avg = float("{:.2f}".format(tot / count))
     return render_template('profile.html', list=ass, user=user, dict=dict, count=count, points=user.points, avg=avg,
