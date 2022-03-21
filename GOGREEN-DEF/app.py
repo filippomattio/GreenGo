@@ -717,9 +717,10 @@ def go(name, id):
             dict[tr.date] = sh_co
             count = count + 1
             tot = tot + sh_co.price_per_minute
-        id_reservation = ass[0].id
-        name_reservation = ass[0].sharing_company
-        to_delete = ass[0]
+        if 'delete' not in session:
+            id_reservation = ass[0].id
+            name_reservation = ass[0].sharing_company
+
     else:
         ass=[]
     if 'validate' in session:
@@ -740,8 +741,10 @@ def go(name, id):
         session.pop('delete', None)
     if 'delete' in session and flag.getFlag() == True:
         flag.SetFlag(False)
+
         session.pop('unlock', None)
         session.pop('info', None)
+
     """if 'delete' in session and flag.getFlag() == False:
         if flag2.getFlag() == False:
             tr = Transportation.query.filter_by(user=session['email']).order_by(desc(Transportation.date)).first()
