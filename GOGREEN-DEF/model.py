@@ -14,7 +14,7 @@ class User(db.Model):
     transportations = db.relationship("Transportation", backref="user_tr")
     points = db.Column(db.Integer, default=0)
 
-    #Da fare funzione getPoints and setPoints
+    # Da fare funzione getPoints and setPoints
 
     def get_date_of_registration(self):
         return self.date_of_registration.strftime("%Y-%m-%d")
@@ -22,11 +22,13 @@ class User(db.Model):
     def get_password(self):
         return self.password
 
+
 class Prize(db.Model):
-        __tablename__ = "prize"
-        name = db.Column(db.String(100), primary_key=True)
-        company = db.Column(db.String(100),primary_key=True, nullable=False)
-        points = db.Column(db.Integer)
+    __tablename__ = "prize"
+    name = db.Column(db.String(100), primary_key=True)
+    company = db.Column(db.String(100), primary_key=True, nullable=False)
+    points = db.Column(db.Integer)
+
 
 class Mean(db.Model):
     __tablename__ = "means"
@@ -43,9 +45,9 @@ class SharingCompany(db.Model):
     date_of_registration = db.Column(db.Date)
     num_vehicles = db.Column(db.Integer, nullable=False, default=1)
     price_per_minute = db.Column(db.Float, nullable=False)
-    min_age = db.Column(db.Integer, nullable = False, default = 18)
-    type_vehicle = db.Column(db.String(20), nullable = False)
-    type_motor = db.Column(db.String(20), nullable = False)
+    min_age = db.Column(db.Integer, nullable=False, default=18)
+    type_vehicle = db.Column(db.String(20), nullable=False)
+    type_motor = db.Column(db.String(20), nullable=False)
     points = db.Column(db.Integer, nullable=False)
     reservation_time = db.Column(db.Time, nullable=False)
     transportations = db.relationship("Transportation", backref="sharing_company_tr")
@@ -55,15 +57,18 @@ class SharingCompany(db.Model):
         s = str(str(self.price_per_minute) + " euro/minute")
         return s
 
+
 class Transportation(db.Model):
     __tablename__ = "transportations"
     user = db.Column(db.String(100), db.ForeignKey('users.email'), primary_key=True)
     sharing_company = db.Column(db.String(50), db.ForeignKey('sharing_companies.name'), primary_key=True)
     date = db.Column(db.DateTime, default=datetime.now(), primary_key=True)
     id = db.Column(db.Integer, db.ForeignKey('means.id'))
+
     def getDate(self):
         s = self.date.strftime("%Y-%m-%d %H:%M:%S")
         return s
+
 
 class Rating(db.Model):
     __tablename__ = "ratings"
@@ -72,9 +77,13 @@ class Rating(db.Model):
     rank = db.Column(db.Integer)
     reason = db.Column(db.String(200))
 
+
 class FinalFeedback(db.Model):
     __tablename__ = "final_feedback"
-    user = db.Column(db.String(100),db.ForeignKey('users.email'), primary_key=True)
+    user = db.Column(db.String(100), db.ForeignKey('users.email'), primary_key=True)
     date = db.Column(db.DateTime, default=datetime.now())
     motivation = db.Column(db.Integer)
     other = db.Column(db.String(200))
+
+
+

@@ -15,8 +15,8 @@ class LoginForm(FlaskForm):
 class ReservateForm(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit = SubmitField('Discover more')
-class PrizeForm(FlaskForm):
-    submit = SubmitField('Buy now')
+
+
 class Delete(FlaskForm):
     sharing_company = HiddenField("Field 1")
     submit1 = SubmitField('CANCEL')
@@ -50,7 +50,8 @@ class RegistrationForm(FlaskForm):
         if re.search(regex, password):
             return True
         else:
-            flash('Password must be between 8 and 20 characters and must contains at least one capital letter and one number. Special characters are admitted', 'errorPassword')
+            flash('Password must be between 8 and 20 characters and must contains at least one capital letter and one number. Special characters are admitted',
+                  'errorPassword')
             return False
 
     def check_email(self,email):
@@ -109,3 +110,6 @@ class RecoverForm(FlaskForm):
         else:
             flash("Email with password sent to ' %s '. Please check your email inbox." % self.email.data, 'oldEmailSuccess')
             return True
+
+class PrizeForm(FlaskForm):
+    submit = SubmitField('Buy now')
