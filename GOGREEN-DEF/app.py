@@ -641,16 +641,17 @@ def go(name, id):
         return redirect(url_for('login_page'))
     email = session['email']
     user = User.query.filter_by(email=email).first()
-    session['unlock'] = name + "," + str(id)
+
     if user.email in request.cookies and name != 'profile' and 'unlock' in session:
         tot_tr = Transportation.query.filter_by(user=email).order_by(desc(Transportation.date)).all()
-
+        session['unlock'] = name + "," + str(id)
         st = session['unlock']
         tt = st.split(",")
         id = int(tt[1])
         sh_co = tt[0]
         return redirect(url_for('reservation', name=sh_co, id=id))
     if email and name != 'profile':
+        session['unlock'] = name + "," + str(id)
         tr = Transportation(user=email, sharing_company=name, date=datetime.now(), id=id)
         sh = SharingCompany.query.filter_by(name=tr.sharing_company).first()
         session['info'] = tr.user + "," + tr.sharing_company + "," + str(tr.date) + "," + str(tr.id)
