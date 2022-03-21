@@ -39,7 +39,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///website_flask.db"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # EMAIL config
 app.config[
-    'MAIL_USERNAME'] = 'greengo2022@email.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
+    'MAIL_USERNAME'] = 'greengoo@mail.com'  # qui bisogna mettere il mio indirizzo email: ex. greengo@mail.com
 app.config['MAIL_PASSWORD'] = 'Greengo2022'
 app.config['MAIL_TLS'] = True
 app.config['MAIL_SERVER'] = 'smtp.mail.com'  # bisogna registrarsi al sito mail.com!!!
@@ -66,7 +66,7 @@ flag = Flag()
 flag2 = Flag()
 
 
-""""
+
 @app.before_first_request
 def create_db():
     db.drop_all()
@@ -102,6 +102,8 @@ def create_db():
         lat=uniform(45.039541, 45.095419)
         lng=uniform(7.634643, 7.688886)
         m1 = Mean(id=id, sharing_company="Mobike", lat=lat, lng=lng)
+        rating = Rating(user="greengoo@mail.com", rank=randint(3,5), date=datetime.now(), reason="")
+        db.session.add(rating)
         db.session.add(m1)        
     db.session.add(s1)
     db.session.add(s2)
@@ -112,7 +114,7 @@ def create_db():
     db.session.add(p1)
     db.session.add(p2)
     db.session.commit()
-"""""
+
 
 
 @app.route("/cookie/<string:name>/<string:id>/<string:email>/<int:seconds>", methods=['GET', 'POST'])
@@ -280,7 +282,7 @@ def mapview2():
                                                                                              "<br>"
                                                                                              "<img src='https://www.trenitalia.com/content/dam/tcom/immagini/trenitalia-img/offerte-e-servizi/servizi/416x359/416x359-Enjoy-ENI-CarSharing.jpg' width='100' height='100'/>"
             }
-        if m.sharing_company == 'Car2go':
+        if m.sharing_company == 'Car2go' and sh_co.min_age <= age:
             new_marker = {
                 'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/sportutilityvehicle.png',
                 'lat': m.lat,
@@ -293,7 +295,7 @@ def mapview2():
                                                                     "<br>"
                                                                     "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Car2go_logo.svg/1200px-Car2go_logo.svg.png' width='100' height='100'/>"
             }
-        if m.sharing_company == 'Mobike':
+        if m.sharing_company == 'Mobike' and sh_co.min_age <= age:
             new_marker = {
                 'icon': 'https://raw.githubusercontent.com/filippomattio/flaskProject4-gogreen/main/GOGREEN-DEF/cycling.png',
                 'lat': m.lat,
@@ -312,9 +314,8 @@ def mapview2():
     return render_template('map.html', sndmap=sndmap, username=name, class_temp=class_temp)
 
 
-def send_mail(to, subject, template, **kwargs):  # to is could be a list
+def send_mail(to, subject, template, **kwargs):
     msg = Message(subject, recipients=[to], sender=app.config['MAIL_USERNAME'])
-    # msg.body= render_template(template + '.txt',**kwargs) solo uno dei due puo essere usato, non entrambi!
     msg.html = render_template(template + '.html', **kwargs)
     mail.send(msg)
 
@@ -330,7 +331,7 @@ def reservation(name, id):
     form2 = Unlock()
     session['unlock'] = name+","+str(id)
     if form1.submit1.data and form1.validate():
-        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
         session['delete'] = 'clear'
         flag.SetFlag(True)
 
@@ -338,7 +339,7 @@ def reservation(name, id):
         resp.set_cookie(email, cookie, max_age=0)
         return resp
     if form2.submit2.data and form2.validate():
-        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first() #a cosa serve?
+        tt = Transportation.query.filter_by().order_by(desc(Transportation.date)).first()
         session['validate'] = 'unlock'
         flag.SetFlag(False)
         resp = make_response(redirect(url_for('pro')))
